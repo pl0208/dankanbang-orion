@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>단칸방의 오리온</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="game-shell" aria-label="단칸방의 오리온 프로토타입">
+      <section class="stage" id="stage">
+        <div class="sky" aria-hidden="true">
+          <span class="star star-main"></span>
+          <span class="star star-small star-a"></span>
+          <span class="star star-small star-b"></span>
+          <span class="star star-small star-c"></span>
+        </div>
+        <div class="room room-active" id="room">
+          <div class="window"></div>
+          <div class="desk">
+            <div class="monitor">
+              <span>VICTORY</span>
+            </div>
+            <div class="keyboard"></div>
+          </div>
+          <div class="bed"></div>
+        </div>
+        <div class="roof" id="roof">
+          <div class="rail"></div>
+          <div class="smoke"></div>
+          <div class="fallen-star"></div>
+          <div class="alien"></div>
+        </div>
+      </section>
+
+      <section class="hud">
+        <div class="chapter" id="chapter">Chapter 1. 추락한 별</div>
+        <div class="speaker" id="speaker">이빛나</div>
+        <p class="dialogue" id="dialogue"></p>
+        <div class="choices" id="choices"></div>
+      </section>
+    </main>
+
+    <script src="./story.js"></script>
+    <script src="./game.js"></script>
+  </body>
+</html>

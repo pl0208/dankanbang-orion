@@ -1,0 +1,331 @@
+:root {
+  color-scheme: dark;
+  --bg: #08090d;
+  --ink: #f3f0e8;
+  --muted: #a4a0a0;
+  --panel: rgba(16, 18, 27, 0.92);
+  --line: rgba(255, 255, 255, 0.14);
+  --accent: #91ffba;
+  --accent-2: #ffd66b;
+  --danger: #ff6d8f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at 50% 0%, #202438 0%, var(--bg) 56%);
+  color: var(--ink);
+  font-family: "Segoe UI", "Malgun Gothic", sans-serif;
+}
+
+button {
+  font: inherit;
+}
+
+.game-shell {
+  width: min(1120px, 100%);
+  min-height: 100vh;
+  margin: 0 auto;
+  display: grid;
+  grid-template-rows: minmax(380px, 1fr) auto;
+  padding: 20px;
+  gap: 16px;
+}
+
+.stage {
+  position: relative;
+  overflow: hidden;
+  min-height: 420px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: linear-gradient(#0c1020 0%, #11131b 48%, #1b1720 100%);
+}
+
+.sky,
+.room,
+.roof {
+  position: absolute;
+  inset: 0;
+}
+
+.sky {
+  opacity: 0.82;
+}
+
+.star {
+  position: absolute;
+  display: block;
+  border-radius: 999px;
+  background: #fff8c9;
+  box-shadow: 0 0 18px #fff2a2;
+}
+
+.star-main {
+  top: 16%;
+  right: 18%;
+  width: 18px;
+  height: 18px;
+  animation: pulse 2.2s ease-in-out infinite;
+}
+
+.star-small {
+  width: 4px;
+  height: 4px;
+  opacity: 0.65;
+}
+
+.star-a {
+  top: 18%;
+  left: 22%;
+}
+
+.star-b {
+  top: 30%;
+  left: 66%;
+}
+
+.star-c {
+  top: 12%;
+  left: 48%;
+}
+
+.room {
+  background: linear-gradient(180deg, rgba(8, 9, 13, 0.7), rgba(8, 9, 13, 0.98));
+  transform: translateY(0);
+  transition: opacity 400ms ease, transform 500ms ease;
+}
+
+.room-hidden {
+  opacity: 0;
+  transform: translateY(28px);
+  pointer-events: none;
+}
+
+.window {
+  position: absolute;
+  top: 64px;
+  right: 84px;
+  width: 132px;
+  height: 172px;
+  border: 8px solid #262a33;
+  background: linear-gradient(#10162a, #08090d);
+}
+
+.desk {
+  position: absolute;
+  left: 18%;
+  bottom: 92px;
+  width: 340px;
+  height: 110px;
+  border-top: 12px solid #4a342e;
+  background: #2a1f20;
+}
+
+.monitor {
+  position: absolute;
+  left: 58px;
+  bottom: 82px;
+  width: 172px;
+  height: 102px;
+  display: grid;
+  place-items: center;
+  border: 7px solid #17191d;
+  background: linear-gradient(135deg, #1dff89, #2939ff);
+  color: #07100b;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.keyboard {
+  position: absolute;
+  left: 82px;
+  bottom: 28px;
+  width: 210px;
+  height: 18px;
+  background: #111318;
+  border-radius: 3px;
+}
+
+.bed {
+  position: absolute;
+  right: 13%;
+  bottom: 72px;
+  width: 250px;
+  height: 88px;
+  background: #252a3a;
+  border-top: 26px solid #53607e;
+}
+
+.roof {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 450ms ease, transform 550ms ease;
+  pointer-events: none;
+}
+
+.roof-active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.rail {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 116px;
+  height: 22px;
+  background: #2b303b;
+  box-shadow: 0 64px 0 #191b22;
+}
+
+.smoke {
+  position: absolute;
+  left: 34%;
+  bottom: 190px;
+  width: 34px;
+  height: 70px;
+  border-radius: 50%;
+  border-left: 3px solid rgba(255, 255, 255, 0.24);
+  opacity: 0.6;
+}
+
+.fallen-star {
+  position: absolute;
+  right: 20%;
+  bottom: 150px;
+  width: 106px;
+  height: 106px;
+  border-radius: 44% 56% 48% 52%;
+  background: radial-gradient(circle at 35% 25%, #fffad6, #ffe071 36%, #ff8f57 100%);
+  box-shadow: 0 0 42px rgba(255, 218, 100, 0.82);
+  opacity: 0;
+  transform: scale(0.35) rotate(-18deg);
+  transition: opacity 400ms ease, transform 500ms ease;
+}
+
+.alien {
+  position: absolute;
+  right: calc(20% + 36px);
+  bottom: 170px;
+  width: 38px;
+  height: 62px;
+  border-radius: 20px 20px 12px 12px;
+  background: var(--accent);
+  box-shadow: 0 -22px 0 8px #afffd0;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 350ms ease 160ms, transform 400ms ease 160ms;
+}
+
+.stage-crash .fallen-star,
+.stage-alien .fallen-star,
+.stage-alien .alien {
+  opacity: 1;
+  transform: scale(1) rotate(-8deg);
+}
+
+.stage-alien .alien {
+  transform: translateY(0);
+}
+
+.hud {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  padding: 18px;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
+}
+
+.chapter {
+  color: var(--accent-2);
+  font-size: 0.92rem;
+  margin-bottom: 10px;
+}
+
+.speaker {
+  width: fit-content;
+  min-width: 112px;
+  margin-bottom: 10px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.dialogue {
+  min-height: 72px;
+  margin: 0 0 16px;
+  line-height: 1.7;
+  font-size: 1.08rem;
+  word-break: keep-all;
+}
+
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.choice {
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid rgba(145, 255, 186, 0.35);
+  border-radius: 6px;
+  background: rgba(145, 255, 186, 0.08);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.choice:hover,
+.choice:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  background: rgba(145, 255, 186, 0.16);
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.86;
+  }
+  50% {
+    transform: scale(1.34);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 700px) {
+  .game-shell {
+    padding: 10px;
+    grid-template-rows: minmax(360px, 1fr) auto;
+  }
+
+  .stage {
+    min-height: 360px;
+  }
+
+  .desk {
+    left: 8%;
+    width: 270px;
+  }
+
+  .bed {
+    right: 7%;
+    width: 180px;
+  }
+
+  .window {
+    right: 34px;
+  }
+
+  .dialogue {
+    font-size: 1rem;
+  }
+}
