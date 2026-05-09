@@ -9,53 +9,314 @@
   <body>
     <main class="game-shell" aria-label="단칸방의 오리온 프로토타입">
       <section class="title-screen" id="titleScreen" aria-label="메인 화면">
-        <img
-          class="title-background"
-          src="./assets/images/main-screen.png"
-          alt=""
-          aria-hidden="true"
-        />
-        <div class="title-background-fallback" aria-hidden="true"></div>
-        <img
-          class="title-logo"
-          src="./assets/images/title.png"
-          alt="단칸방의 오리온"
-        />
-        <h1 class="title-logo-fallback">단칸방의 오리온</h1>
-        <button class="start-prompt" id="startPrompt" type="button">PRESS TO START</button>
+        <div class="title-canvas">
+          <img
+            class="title-background"
+            src="./assets/images/main-screen.png"
+            alt=""
+            aria-hidden="true"
+          />
+          <div class="title-background-fallback" aria-hidden="true"></div>
+          <img
+            class="shooting-star"
+            id="shootingStar"
+            src="./assets/images/shooting-star.png"
+            alt=""
+            aria-hidden="true"
+          />
+          <img
+            class="title-character title-layer"
+            id="titleCharacter"
+            src="./assets/images/title-bina-smoking.png"
+            alt=""
+            aria-hidden="true"
+          />
+          <img
+            class="cigarette-light cigarette-light-a title-layer"
+            src="./assets/images/cigarette-light-1.png"
+            alt=""
+            aria-hidden="true"
+          />
+          <img
+            class="cigarette-light cigarette-light-b title-layer"
+            src="./assets/images/cigarette-light-2.png"
+            alt=""
+            aria-hidden="true"
+          />
+          <img
+            class="cigarette-smoke cigarette-smoke-a title-layer"
+            src="./assets/images/cigarette-smoke-1.png"
+            alt=""
+            aria-hidden="true"
+          />
+          <img
+            class="cigarette-smoke cigarette-smoke-b title-layer"
+            src="./assets/images/cigarette-smoke-2.png"
+            alt=""
+            aria-hidden="true"
+          />
+          <img
+            class="title-logo"
+            src="./assets/images/title.png"
+            alt="단칸방의 오리온"
+          />
+          <h1 class="title-logo-fallback">단칸방의 오리온</h1>
+          <button class="start-prompt" id="startPrompt" type="button">PRESS TO START</button>
+        </div>
       </section>
 
-      <section class="stage" id="stage">
-        <div class="sky" aria-hidden="true">
-          <span class="star star-main"></span>
-          <span class="star star-small star-a"></span>
-          <span class="star star-small star-b"></span>
-          <span class="star star-small star-c"></span>
-        </div>
-        <div class="room room-active" id="room">
-          <div class="window"></div>
-          <div class="desk">
-            <div class="monitor">
-              <span>VICTORY</span>
-            </div>
-            <div class="keyboard"></div>
+      <div class="encounter-wipe" id="encounterWipe" aria-hidden="true"></div>
+
+      <section class="stage" id="stage" aria-label="게임 장면">
+        <div class="stage-canvas">
+          <img class="scene-background" id="sceneBackground" alt="" aria-hidden="true" />
+          <img class="stage-character" id="stageCharacter" alt="" aria-hidden="true" />
+          <div class="stage-character-sheet" id="stageCharacterSheet" aria-hidden="true"></div>
+          <div class="overhead-prompt" id="overheadPrompt" aria-hidden="true">
+            <img
+              class="overhead-prompt-frame advance-prompt-a"
+              src="./assets/images/ui/a-key-1.png"
+              alt=""
+            />
+            <img
+              class="overhead-prompt-frame advance-prompt-b"
+              src="./assets/images/ui/a-key-2.png"
+              alt=""
+            />
           </div>
-          <div class="bed"></div>
-        </div>
-        <div class="roof" id="roof">
-          <div class="rail"></div>
-          <div class="smoke"></div>
-          <div class="fallen-star"></div>
-          <div class="alien"></div>
+          <div class="debug-area-layer" id="debugAreaLayer" aria-hidden="true">
+            <div class="debug-move-bounds" id="debugMoveBounds"></div>
+            <div id="debugInteractionBlocks"></div>
+          </div>
         </div>
       </section>
+
+      <div class="cutscene" id="cutscene" aria-hidden="true">
+        <video class="cutscene-video" id="cutsceneVideo" playsinline muted></video>
+      </div>
 
       <section class="hud">
-        <div class="chapter" id="chapter">Chapter 1. 추락한 별</div>
-        <div class="speaker" id="speaker">이빛나</div>
-        <p class="dialogue" id="dialogue"></p>
-        <div class="choices" id="choices"></div>
+        <div class="portrait-frame" id="portraitFrame" aria-hidden="true">
+          <img class="portrait" id="portrait" alt="" />
+        </div>
+        <div class="dialogue-panel">
+          <div class="speaker" id="speaker">이빛나</div>
+          <p class="dialogue" id="dialogue"></p>
+          <div class="choices" id="choices"></div>
+          <div class="advance-prompt" id="advancePrompt" aria-hidden="true">
+            <img
+              class="advance-prompt-frame advance-prompt-a"
+              src="./assets/images/ui/a-key-1.png"
+              alt=""
+            />
+            <img
+              class="advance-prompt-frame advance-prompt-b"
+              src="./assets/images/ui/a-key-2.png"
+              alt=""
+            />
+          </div>
+        </div>
       </section>
+
+      <aside class="debug-panel" id="debugPanel" aria-label="스프라이트 조절 패널">
+        <div class="debug-panel-header" data-drag-handle>
+          <strong>Sprite Tuner</strong>
+          <button class="debug-copy" id="copyTuning" type="button">Copy</button>
+        </div>
+
+        <label>
+          Stage X
+          <input id="stageX" type="range" min="-20" max="120" value="49" step="1" />
+        </label>
+        <label>
+          Stage Y
+          <input id="stageY" type="range" min="-20" max="120" value="36" step="0.1" />
+        </label>
+        <label>
+          Stage Size
+          <input id="stageSize" type="range" min="4" max="40" value="13.8" step="0.1" />
+        </label>
+
+        <label>
+          Portrait X
+          <input id="portraitX" type="range" min="0" max="100" value="48" step="1" />
+        </label>
+        <label>
+          Portrait Y
+          <input id="portraitY" type="range" min="0" max="100" value="23" step="1" />
+        </label>
+        <label>
+          Portrait Zoom
+          <input id="portraitZoom" type="range" min="80" max="220" value="170" step="1" />
+        </label>
+
+        <label>
+          Dialogue Opacity
+          <input id="dialogueOpacity" type="range" min="0" max="1" value="0" step="0.01" />
+        </label>
+        <label>
+          Dialogue Width
+          <input id="dialogueWidth" type="range" min="45" max="100" value="83" step="1" />
+        </label>
+        <label>
+          Dialogue Height
+          <input id="dialogueHeight" type="range" min="0" max="360" value="0" step="1" />
+        </label>
+        <label>
+          A Key X
+          <input id="advancePromptX" type="range" min="0" max="120" value="96" step="1" />
+        </label>
+        <label>
+          A Key Y
+          <input id="advancePromptY" type="range" min="0" max="120" value="84" step="1" />
+        </label>
+        <label>
+          A Key Size
+          <input id="advancePromptSize" type="range" min="1" max="12" value="7.7" step="0.1" />
+        </label>
+        <pre class="debug-output" id="debugOutput"></pre>
+      </aside>
+
+      <aside class="debug-panel debug-panel-main" id="debugMainPanel" aria-label="메인 화면 조절 패널">
+        <div class="debug-panel-header" data-drag-handle>
+          <strong>Main Tuner</strong>
+          <button class="debug-copy" id="copyMainTuning" type="button">Copy</button>
+        </div>
+
+        <label>
+          Title X
+          <input id="titleX" type="range" min="0" max="100" value="20" step="1" />
+        </label>
+        <label>
+          Title Y
+          <input id="titleY" type="range" min="0" max="100" value="22" step="1" />
+        </label>
+        <label>
+          Title Size
+          <input id="titleSize" type="range" min="10" max="90" value="48" step="0.1" />
+        </label>
+
+        <label>
+          Star X
+          <input id="shootingStarX" type="range" min="-40" max="120" value="35" step="1" />
+        </label>
+        <label>
+          Star Y
+          <input id="shootingStarY" type="range" min="-20" max="100" value="12" step="1" />
+        </label>
+        <label>
+          Star Size
+          <input id="shootingStarSize" type="range" min="1" max="34" value="10.6" step="0.1" />
+        </label>
+        <label>
+          Star Move X
+          <input id="shootingStarMoveX" type="range" min="-120" max="180" value="160" step="1" />
+        </label>
+        <label>
+          Star Move Y
+          <input id="shootingStarMoveY" type="range" min="-100" max="140" value="120" step="1" />
+        </label>
+
+        <label>
+          Prompt X
+          <input id="promptX" type="range" min="0" max="100" value="50" step="1" />
+        </label>
+        <label>
+          Prompt Y
+          <input id="promptY" type="range" min="0" max="24" value="5.08" step="0.1" />
+        </label>
+        <label>
+          Prompt Size
+          <input id="promptSize" type="range" min="10" max="44" value="27" step="1" />
+        </label>
+
+        <label>
+          Char X
+          <input id="titleCharacterX" type="range" min="-20" max="120" value="70" step="1" />
+        </label>
+        <label>
+          Char Y
+          <input id="titleCharacterY" type="range" min="-20" max="100" value="43" step="1" />
+        </label>
+        <label>
+          Char Size
+          <input id="titleCharacterSize" type="range" min="4" max="48" value="20.38" step="0.1" />
+        </label>
+
+        <label>
+          Light X
+          <input id="cigaretteLightX" type="range" min="-20" max="120" value="66" step="1" />
+        </label>
+        <label>
+          Light Y
+          <input id="cigaretteLightY" type="range" min="-20" max="100" value="42" step="1" />
+        </label>
+        <label>
+          Light Size
+          <input id="cigaretteLightSize" type="range" min="0.3" max="12" value="4.75" step="0.05" />
+        </label>
+
+        <label>
+          Smoke X
+          <input id="cigaretteSmokeX" type="range" min="-20" max="120" value="56" step="1" />
+        </label>
+        <label>
+          Smoke Y
+          <input id="cigaretteSmokeY" type="range" min="-20" max="100" value="57" step="1" />
+        </label>
+        <label>
+          Smoke Size
+          <input id="cigaretteSmokeSize" type="range" min="0.5" max="18" value="5.95" step="0.05" />
+        </label>
+        <pre class="debug-output" id="debugMainOutput"></pre>
+      </aside>
+
+      <aside class="debug-panel debug-panel-walk" id="debugWalkPanel" aria-label="이동 캐릭터 조절 패널">
+        <div class="debug-panel-header" data-drag-handle>
+          <strong>Walk Tuner</strong>
+          <button class="debug-copy" id="copyWalkTuning" type="button">Copy</button>
+        </div>
+
+        <label>
+          Walk Size
+          <input id="walkSize" type="range" min="4" max="40" value="10.4" step="0.1" />
+        </label>
+        <label>
+          Walk Width
+          <input id="walkWidthScale" type="range" min="40" max="220" value="85" step="1" />
+        </label>
+        <label>
+          Walk Height
+          <input id="walkHeightScale" type="range" min="40" max="220" value="125" step="1" />
+        </label>
+        <label>
+          Move Speed
+          <input id="walkSpeed" type="range" min="0.05" max="0.8" value="0.31" step="0.01" />
+        </label>
+
+        <label>
+          Bounds L
+          <input id="walkBoundLeft" type="range" min="0" max="100" value="26" step="1" />
+        </label>
+        <label>
+          Bounds R
+          <input id="walkBoundRight" type="range" min="0" max="100" value="73" step="1" />
+        </label>
+        <label>
+          Bounds T
+          <input id="walkBoundTop" type="range" min="0" max="100" value="33" step="1" />
+        </label>
+        <label>
+          Bounds B
+          <input id="walkBoundBottom" type="range" min="0" max="100" value="83" step="1" />
+        </label>
+
+        <button class="debug-copy debug-add-block" id="addInteractionBlock" type="button">
+          Add Block
+        </button>
+        <div class="debug-block-controls" id="blockControls"></div>
+        <pre class="debug-output" id="debugWalkOutput"></pre>
+      </aside>
     </main>
 
     <script src="./story.js"></script>
