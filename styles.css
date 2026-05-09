@@ -26,7 +26,13 @@ button {
   font: inherit;
 }
 
+img {
+  display: block;
+  max-width: 100%;
+}
+
 .game-shell {
+  position: relative;
   width: min(1120px, 100%);
   min-height: 100vh;
   margin: 0 auto;
@@ -34,6 +40,102 @@ button {
   grid-template-rows: minmax(380px, 1fr) auto;
   padding: 20px;
   gap: 16px;
+}
+
+.title-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #06070b;
+  cursor: pointer;
+  transition: opacity 700ms ease, visibility 700ms ease;
+}
+
+.title-screen-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.title-background,
+.title-background-fallback {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.title-background {
+  z-index: 1;
+  object-fit: cover;
+}
+
+.title-background-fallback {
+  z-index: 0;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 214, 107, 0.25), transparent 24%),
+    linear-gradient(180deg, #121624 0%, #07080d 50%, #151019 100%);
+}
+
+.title-logo,
+.title-logo-fallback {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  opacity: 0;
+  transform: translateY(76px);
+  animation: titleRise 2200ms ease 550ms forwards;
+}
+
+.title-logo {
+  width: min(620px, 72vw);
+  max-height: 34vh;
+  object-fit: contain;
+}
+
+.title-logo-missing {
+  display: none;
+}
+
+.title-logo-fallback {
+  display: none;
+  color: var(--ink);
+  font-size: clamp(2.25rem, 8vw, 5.4rem);
+  font-weight: 900;
+  text-align: center;
+  text-shadow: 0 8px 34px rgba(0, 0, 0, 0.78);
+  word-break: keep-all;
+}
+
+.title-logo-missing + .title-logo-fallback {
+  display: block;
+}
+
+.start-prompt {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(44px, 9vh, 92px);
+  z-index: 3;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: rgba(243, 240, 232, 0.9);
+  cursor: pointer;
+  font-size: clamp(0.9rem, 2.4vw, 1.15rem);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-align: center;
+  transform: translateX(-50%);
+  animation: promptBlink 1500ms ease-in-out 2800ms infinite;
+}
+
+.start-prompt:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 8px;
 }
 
 .stage {
@@ -301,6 +403,23 @@ button {
   }
 }
 
+@keyframes titleRise {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes promptBlink {
+  0%,
+  100% {
+    opacity: 0.38;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 @media (max-width: 700px) {
   .game-shell {
     padding: 10px;
@@ -327,5 +446,10 @@ button {
 
   .dialogue {
     font-size: 1rem;
+  }
+
+  .title-logo {
+    width: min(86vw, 520px);
+    max-height: 30vh;
   }
 }
