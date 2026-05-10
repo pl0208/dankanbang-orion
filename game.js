@@ -175,6 +175,7 @@ function buildEncounterWipe() {
 }
 
 function setStage(stageName) {
+  stage.classList.toggle("stage-roof", stageName === "roof");
   stage.classList.toggle("stage-crash", stageName === "crash");
   stage.classList.toggle("stage-alien", stageName === "alien");
   setImage(sceneBackground, sceneBackgrounds[stageName], "scene-background-visible");
@@ -272,6 +273,7 @@ function startWalkMode(scene) {
     exitX: scene.exit?.x ?? 82,
     activeBlockIndex: -1,
     interactionText: null,
+    interactions: scene.interactions ?? interactionBlocks,
     x: scene.startX ?? tuning.stageX,
     y: scene.startY ?? tuning.stageY
   };
@@ -439,7 +441,7 @@ function updateActiveInteractionBlock() {
     return;
   }
 
-  walkMode.activeBlockIndex = interactionBlocks.findIndex((block) =>
+  walkMode.activeBlockIndex = walkMode.interactions.findIndex((block) =>
     pointInBlock(walkMode.x, walkMode.y, block)
   );
   overheadPrompt.classList.toggle("overhead-prompt-visible", walkMode.activeBlockIndex >= 0);
@@ -458,13 +460,13 @@ function interactWithActiveBlock() {
     return false;
   }
 
-  const block = interactionBlocks[walkMode.activeBlockIndex];
+  const block = walkMode.interactions[walkMode.activeBlockIndex];
   walkMode.interactionText = block.text;
   hud.classList.remove("hud-hidden");
-  speaker.textContent = "이빛나";
+  speaker.textContent = block.speaker ?? "이빛나";
   dialogue.textContent = block.text;
   choices.replaceChildren();
-  renderCharacter("bina");
+  renderCharacter(block.character ?? "bina");
   advancePrompt.classList.remove("advance-prompt-hidden");
 
   if (block.next) {

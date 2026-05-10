@@ -129,7 +129,85 @@ const story = {
       character: "bina",
       text: "내 인생도 수리 못 하는데 외계 우주선까지? ...근데 이상하게, 조금 재밌을 것 같다.",
       stage: "alien",
-      choices: [{ text: "처음부터 다시", next: "room_victory" }]
+      choices: [
+        { text: "일단 수리해보자", next: "repair_start" },
+        { text: "처음부터 다시", next: "room_victory" }
+      ]
+    },
+    repair_start: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "좋아! 첫 번째 규칙. 반짝이는 건 만지기 전에 꼭 나한테 물어봐. 두 번째 규칙. 이미 만졌으면 침착하게 모른 척해!",
+      stage: "alien",
+      next: "repair_start_bina"
+    },
+    repair_start_bina: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "규칙이 왜 전부 사고 친 다음에 만든 것 같냐.",
+      stage: "alien",
+      next: "roof_repair_walk"
+    },
+    roof_repair_walk: {
+      character: "bina",
+      stage: "alien",
+      mode: "walk",
+      startX: 50,
+      startY: 70,
+      interactions: [
+        {
+          x: 55,
+          y: 52,
+          width: 18,
+          height: 18,
+          speaker: "이빛나",
+          character: "bina",
+          text: "이게 우주선 핵심부야? 그냥 엄청 비싼 가습기처럼 생겼는데.",
+          next: "repair_core"
+        },
+        {
+          x: 30,
+          y: 40,
+          width: 16,
+          height: 24,
+          speaker: "이빛나",
+          character: "bina",
+          text: "옥상 난간 너머로 서울이 조용히 깜빡인다. 이상하게 도망치고 싶은 마음은 조금 줄었다."
+        },
+        {
+          x: 42,
+          y: 64,
+          width: 10,
+          height: 12,
+          speaker: "뿅뿅",
+          character: "pyong",
+          text: "그건 차원 배터리 조각이야! ...아마도. 아니면 과자 봉지일 수도 있고."
+        }
+      ]
+    },
+    repair_core: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "핵심부가 식었어. 지구 물건으로 임시 전도 회로를 만들면 다시 켤 수 있어.",
+      stage: "alien",
+      next: "repair_materials"
+    },
+    repair_materials: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "지구 물건이라면... 내 방에 굴러다니는 충전 케이블, 은박지, 망가진 키보드 같은 거?",
+      stage: "alien",
+      next: "repair_hook"
+    },
+    repair_hook: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "완벽해! 우주는 늘 그런 애매한 물건들로 굴러가.",
+      stage: "alien",
+      choices: [
+        { text: "방으로 내려가자", next: "room_victory" },
+        { text: "수리 지점을 다시 본다", next: "roof_repair_walk" }
+      ]
     }
   }
 };

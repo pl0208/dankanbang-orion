@@ -308,6 +308,40 @@ img {
   background: #05060a;
 }
 
+.stage-canvas::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 450ms ease;
+}
+
+.stage-roof .stage-canvas::before,
+.stage-crash .stage-canvas::before,
+.stage-alien .stage-canvas::before {
+  opacity: 1;
+}
+
+.stage-roof .stage-canvas::before {
+  background:
+    linear-gradient(180deg, #071122 0%, #10182d 48%, #15161d 49%, #090a0f 100%),
+    repeating-linear-gradient(90deg, transparent 0 7%, rgba(255, 255, 255, 0.08) 7% 7.4%);
+}
+
+.stage-crash .stage-canvas::before {
+  background:
+    radial-gradient(circle at 58% 62%, rgba(255, 214, 107, 0.46) 0 7%, rgba(255, 109, 143, 0.2) 13%, transparent 25%),
+    linear-gradient(180deg, #061126 0%, #10182d 48%, #161316 49%, #08090d 100%);
+}
+
+.stage-alien .stage-canvas::before {
+  background:
+    radial-gradient(circle at 62% 58%, rgba(145, 255, 186, 0.34) 0 9%, rgba(255, 214, 107, 0.15) 17%, transparent 28%),
+    linear-gradient(180deg, #071122 0%, #12192d 48%, #15161d 49%, #08090d 100%);
+}
+
 .debug-area-layer {
   position: absolute;
   inset: 0;
