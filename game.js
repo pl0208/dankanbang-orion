@@ -1147,8 +1147,7 @@ function applyMainTuning() {
 
 function setupMainDebugPanel() {
   const params = new URLSearchParams(window.location.search);
-  const isDebug =
-    params.get("debug") === "1" || params.get("debug") === "2" || params.get("debug") === "main";
+  const isDebug = params.get("debug") === "1";
 
   if (!isDebug) {
     return;
@@ -1290,17 +1289,13 @@ function renderBlockControls() {
 
 function setupWalkDebugPanel() {
   const params = new URLSearchParams(window.location.search);
-  const isDebug =
-    params.get("debug") === "1" || params.get("debug") === "3" || params.get("debug") === "walk";
+  const isDebug = params.get("debug") === "1";
 
   if (!isDebug) {
     return;
   }
 
   debugWalkPanel.classList.add("debug-panel-visible");
-  if (params.get("debug") !== "1") {
-    debugAreaLayer.classList.add("debug-area-layer-visible");
-  }
   debugWalkStage.value = currentStageName;
   syncWalkInputsFromStage();
   setupCameraControls(debugWalkPanel, applyWalkTuning);
