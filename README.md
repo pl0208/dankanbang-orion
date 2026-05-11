@@ -8,9 +8,9 @@
 
 - 브라우저에서 바로 실행되는 HTML/CSS/JavaScript 프로토타입
 - 메인 화면, 타이틀 등장 연출, `PRESS TO START` 시작 입력
-- 선택지 기반 도입부
-- 단칸방, 옥상, 추락한 별, 외계인 등장 장면
-- 외계인 조우 이후 옥상에서 우주선 핵심부를 살펴보는 수리 도입부
+- V1 초안 기준 프롤로그와 1장 `낯선 손님` 대사 진행
+- 단칸방 상호작용, 옥상 이동, 별 추락, 뿅뿅 첫 만남 장면
+- 1장: 방 소개, 우주선 손상 보고, 아침, 편의점, 라면, 포트폴리오 대화
 
 ## 이미지 파일 위치
 
@@ -39,6 +39,25 @@
 
 - `assets/images/scene-room.png`: 단칸방 배경
 - `assets/images/scene-roof.png`: 옥상 배경
+- `assets/images/scene-convenience-store.png`: 1장 편의점 배경
+- `assets/images/scene-street-day.png`: 1장 낮 골목/편의점 이동 배경
+- `assets/images/scene-ship-interior.png`: 2장 이후 우주선 내부 배경
+
+추가하면 좋은 오브젝트/이벤트 스프라이트 후보는 아래와 같습니다.
+
+- `assets/images/objects/defeat-screen.png`: 프롤로그 게임 패배 화면
+- `assets/images/objects/alien-capsule.png`: 옥상에 떨어진 캡슐/우주선
+- `assets/images/objects/hologram-report.png`: 우주선 손상 보고 홀로그램
+- `assets/images/objects/portfolio-screen.png`: 빛나의 포트폴리오 화면
+- `assets/images/objects/ramen-cup.png`: 라면 식사 장면 소품
+- `assets/images/objects/hotbar.png`: 편의점 핫바 소품
+
+추가 캐릭터 스프라이트 후보는 아래와 같습니다.
+
+- `assets/images/characters/pyong-hoodie-portrait.png`: 변장한 뿅뿅 대화 초상
+- `assets/images/characters/pyong-hoodie-sprite.png`: 변장한 뿅뿅 인게임 스프라이트
+- `assets/images/characters/bina-room-portrait.png`: 피곤한 방 안 빛나 표정
+- `assets/images/characters/bina-roof-portrait.png`: 옥상 흡연/독백용 빛나 표정
 
 대화 진행 UI 스프라이트는 아래 경로와 파일명으로 넣으면 됩니다.
 
@@ -64,6 +83,22 @@
 이동 캐릭터 크기와 속도를 조절하려면 `?debug=3`을 붙여 엽니다.
 
 예: `http://127.0.0.1:4173/?debug=3`
+
+디버그 공통 조절 항목:
+
+- `?debug=1`: 캐릭터, 메인 화면, 이동/상호작용 디버그를 오른쪽 메뉴에서 전환하는 통합 디버그
+- `Camera X`, `Camera Y`, `Camera Zoom`: 인게임 스테이지 카메라 위치와 줌
+- `Camera Duration`: 다음 카메라 값으로 이동하는 시간(ms)
+- Debug1 `Character`: 이빛나, 뿅뿅, 김철수의 인게임 좌표/크기/가로 세로 비율/대화 초상 위치를 캐릭터별로 조절
+- Debug1 `Stage X Scale`, `Stage Y Scale`: 현재 선택한 캐릭터 스프라이트의 가로/세로 비율
+
+스토리 장면마다 카메라 값을 고정하거나 천천히 이동시키려면 해당 scene에 `camera`를 추가합니다.
+
+```js
+camera: { x: 12, y: -10, zoom: 1.18, duration: 1400 }
+```
+
+대사 A에서 대사 B까지 카메라가 움직이는 연출은 대사를 별도 scene으로 나누고, B scene에 목표 카메라 값을 넣어 표현합니다.
 
 ## 작업 메모
 
