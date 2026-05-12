@@ -41,12 +41,68 @@ const story = {
       character: "bina",
       text: "스물여덟. 취업준비생 3년 차. 포트폴리오는 반쯤 완성된 채로 한 달째 멈춰 있었다.",
       stage: "room",
+      next: "work_reluctant_1"
+    },
+    work_reluctant_1: {
+      speaker: "나레이션",
+      text: "빛나는 마우스를 잡았다. 손끝은 책상 위 먼지만큼이나 무거웠다.",
+      stage: "room2",
+      actors: [],
+      next: "work_reluctant_2"
+    },
+    work_reluctant_2: {
+      speaker: "이빛나",
+      text: "하... 그래도 오랜만에 작업 좀 해볼까.",
+      stage: "room2",
+      actors: [],
+      next: "work_reluctant_3"
+    },
+    work_reluctant_3: {
+      speaker: "나레이션",
+      text: "새 파일을 열자 빈 화면이 먼저 빛났다. 뭘 그려야 할지보다, 왜 해야 하는지가 먼저 막혔다.",
+      stage: "room3",
+      actors: [],
+      next: "work_reluctant_4"
+    },
+    work_reluctant_4: {
+      speaker: "이빛나",
+      text: "일단 선 하나라도 긋자. 선 하나면... 한 거지 뭐.",
+      stage: "room3",
+      actors: [],
+      next: "work_reluctant_5"
+    },
+    work_reluctant_5: {
+      speaker: "이빛나",
+      text: ".....",
+      stage: "room4",
+      actors: [],
+      next: "work_reluctant_6"
+    },
+    work_reluctant_6: {
+      speaker: "나레이션",
+      text: "커서가 깜빡였다. 빛나도 같이 깜빡였다. 정신은 자꾸 침대 쪽으로 도망쳤다.",
+      stage: "room4",
+      actors: [],
+      next: "work_reluctant_7"
+    },
+    work_reluctant_7: {
+      speaker: "이빛나",
+      text: "아, 진짜 하기 싫다. 근데 안 하면 더 싫어질 거잖아.",
+      stage: "room5",
+      actors: [],
+      next: "work_reluctant_8"
+    },
+    work_reluctant_8: {
+      speaker: "나레이션",
+      text: "몇 번의 클릭과 몇 번의 한숨이 지나갔다. 결과물은 작았고, 피로는 쓸데없이 컸다.",
+      stage: "room5",
+      actors: [],
       next: "prologue_tomorrow"
     },
     prologue_tomorrow: {
       speaker: "이빛나",
       character: "bina",
-      text: "내일은 해야지.",
+      text: "내일 마저 해야지.",
       stage: "room",
       next: "prologue_empty_word"
     },
@@ -54,6 +110,13 @@ const story = {
       speaker: "나레이션",
       character: "bina",
       text: "그 말이 얼마나 공허한지 본인이 가장 잘 알았다. 어제도, 그저께도, 지난달에도 같은 말을 했었다.",
+      stage: "room",
+      next: "prologue_smoke"
+    },
+    prologue_smoke: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "에휴... 담배나 피고 와야겠다.",
       stage: "room",
       next: "room_before_roof"
     },
@@ -121,63 +184,74 @@ const story = {
       speaker: "이빛나",
       character: "bina",
       text: "나도 저렇게 빛날 수 있을까.",
-      stage: "roof",
+      stage: "roof3",
+      actors: [],
       next: "roof_mock"
     },
     roof_mock: {
       speaker: "이빛나",
       character: "bina",
       text: "웃기지도 않네. 이빛나가 빛나다니. 이름값 못 하는 것도 유전인가.",
-      stage: "roof",
+      stage: "roof3",
+      actors: [],
       next: "star_moves"
     },
     star_moves: {
       speaker: "나레이션",
       text: "그때였다. 별이 움직였다.",
-      stage: "roof",
+      stage: "roof4",
+      actors: [],
       next: "star_grows"
     },
     star_grows: {
       speaker: "나레이션",
       text: "처음에는 착각인 줄 알았다. 하지만 별은 분명히 커지고 있었다. 점점. 점점 더.",
-      stage: "roof",
+      stage: "roof5",
+      actors: [],
       next: "star_panic"
     },
     star_panic: {
       speaker: "이빛나",
       character: "bina",
       text: "뭐야...",
-      stage: "crash",
+      stage: "roof5",
+      actors: [],
       next: "star_frozen"
     },
     star_frozen: {
       speaker: "나레이션",
       text: "도망쳐야 했다. 하지만 몸이 움직이지 않았다.",
-      stage: "crash",
+      stage: "roof6",
+      actors: [],
       next: "crash_lands"
     },
     crash_lands: {
-      speaker: "효과음",
-      text: "광! 굉음과 함께 옥상 바닥에 무언가가 충돌했다.",
+      speaker: "나레이션",
+      text: "쾅! 굉음과 함께 옥상 바닥에 무언가가 충돌했다.",
       stage: "crash",
+      shake: { duration: 1000 },
+      actors: ["bina", "starshipCrash"],
       next: "crash_smell"
     },
     crash_smell: {
       speaker: "나레이션",
       text: "먼지가 자욱하게 피어올랐고, 타는 냄새와 함께 이상하게 달콤한 금속 냄새가 코를 찔렀다.",
       stage: "crash",
+      actors: ["bina", "starshipCrash"],
       next: "crash_capsule"
     },
     crash_capsule: {
       speaker: "나레이션",
       text: "옥상 한가운데에 은빛 구체가 박혀 있었다. 큰 캡슐 정도의 크기. 표면의 문양은 살아있는 것처럼 천천히 빛났다.",
       stage: "alien",
+      actors: ["bina", "starshipCrash"],
       next: "alien_door"
     },
     alien_door: {
       speaker: "나레이션",
       text: "그리고 그 캡슐의 문이 열렸다.",
       stage: "alien",
+      actors: ["bina", "starshipCrash"],
       next: "alien_mic"
     },
     alien_mic: {
@@ -185,6 +259,7 @@ const story = {
       character: "pyong",
       text: "아, 아, 마이크 테스트... 아니, 지구에는 마이크가 없나? 음, 음음...",
       stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
       next: "alien_name_long"
     },
     alien_name_long: {
@@ -192,6 +267,7 @@ const story = {
       character: "pyong",
       text: "나는 안드로메다 은하 제3성계 로열 하우스의 제17대 공주, M31-BN-7721-Ω-Σ...",
       stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
       next: "alien_name_short"
     },
     alien_name_short: {
@@ -199,6 +275,7 @@ const story = {
       character: "pyong",
       text: "아니, 잠깐. 지구식 이름 체계로 바꿔야 하나? 에이, 복잡해. 그냥 뿅뿅이라고 불러.",
       stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
       next: "bina_silent"
     },
     bina_silent: {

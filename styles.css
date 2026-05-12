@@ -84,6 +84,48 @@ img {
   padding: 0;
 }
 
+.stage-jump-tabs {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  z-index: 45;
+  display: none;
+  max-width: min(94vw, 920px);
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow-x: auto;
+  background: rgba(4, 5, 10, 0.68);
+  box-shadow: 0 14px 50px rgba(0, 0, 0, 0.35);
+  transform: translateX(-50%);
+  backdrop-filter: blur(7px);
+}
+
+.stage-jump-tabs-visible {
+  display: flex;
+}
+
+.stage-jump-tabs button {
+  min-width: 0;
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.stage-jump-tabs button:hover {
+  border-color: rgba(145, 255, 186, 0.58);
+  background: rgba(145, 255, 186, 0.15);
+}
+
 .title-screen {
   position: fixed;
   inset: 0;
@@ -317,6 +359,10 @@ img {
   transition: transform var(--camera-duration) ease;
 }
 
+.stage-shake .stage-canvas {
+  animation: stageShake 1000ms steps(2, end);
+}
+
 .stage-canvas::before {
   content: "";
   position: absolute;
@@ -434,6 +480,17 @@ img {
   pointer-events: none;
 }
 
+.ui-hidden-mode .hud,
+.ui-hidden-mode .narration-panel,
+.ui-hidden-mode .advance-prompt,
+.ui-hidden-mode .overhead-prompt,
+.ui-hidden-mode .stage-jump-tabs,
+.ui-hidden-mode .debug-panel {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .stage-actor,
 .stage-character,
 .stage-character-sheet {
@@ -510,19 +567,19 @@ img {
 .narration-panel {
   position: absolute;
   left: 50%;
-  top: 50%;
+  bottom: calc((100vh - var(--scene-canvas-height)) / 2 + 4vh);
   z-index: 11;
   display: grid;
-  width: min(72%, 760px);
-  min-height: 128px;
+  width: var(--dialogue-width);
+  min-height: var(--dialogue-min-height);
   place-items: center;
-  padding: clamp(20px, 3vw, 36px);
+  padding: 26px 36px 32px;
   border-radius: 8px;
   background: rgba(5, 6, 10, 0.54);
   box-shadow: 0 20px 80px rgba(0, 0, 0, 0.42);
   color: var(--ink);
   text-align: center;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   backdrop-filter: blur(5px);
   cursor: pointer;
 }
@@ -748,54 +805,8 @@ img {
   user-select: none;
 }
 
-.debug-switcher {
-  position: fixed;
-  top: 14px;
-  right: 326px;
-  z-index: 41;
-  display: none;
-  gap: 6px;
-  padding: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 8px;
-  background: rgba(7, 8, 12, 0.9);
-  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.36);
-  backdrop-filter: blur(8px);
-}
-
-.debug-switcher-visible {
-  display: grid;
-}
-
-.debug-switcher button {
-  min-width: 78px;
-  min-height: 34px;
-  padding: 6px 10px;
-  border: 1px solid rgba(145, 255, 186, 0.28);
-  border-radius: 6px;
-  background: rgba(145, 255, 186, 0.08);
-  color: var(--ink);
-  cursor: pointer;
-}
-
-.debug-switcher button.debug-switcher-active {
-  border-color: var(--accent);
-  background: rgba(145, 255, 186, 0.18);
-}
-
 .debug-panel-visible {
   display: block;
-}
-
-.debug-panel-main {
-  left: 14px;
-  right: auto;
-}
-
-.debug-panel-walk {
-  top: auto;
-  right: 14px;
-  bottom: 14px;
 }
 
 .debug-panel-header {
@@ -847,31 +858,6 @@ img {
   border-radius: 5px;
   background: rgba(7, 8, 12, 0.95);
   color: var(--ink);
-}
-
-.debug-add-block {
-  width: 100%;
-  margin: 8px 0;
-}
-
-.debug-block-group {
-  margin: 10px 0;
-  padding: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.debug-block-group strong {
-  display: block;
-  margin-bottom: 6px;
-  color: var(--accent-2);
-  font-size: 0.82rem;
-}
-
-.debug-block-group label {
-  grid-template-columns: 22px minmax(0, 1fr);
-  margin: 5px 0;
 }
 
 .debug-output {
@@ -992,6 +978,31 @@ img {
   }
   50% {
     opacity: 1;
+  }
+}
+
+@keyframes stageShake {
+  0%,
+  100% {
+    transform: translate(var(--camera-x), var(--camera-y)) scale(var(--camera-zoom));
+  }
+  10% {
+    transform: translate(calc(var(--camera-x) - 2.2%), var(--camera-y)) scale(var(--camera-zoom));
+  }
+  20% {
+    transform: translate(calc(var(--camera-x) + 2.4%), var(--camera-y)) scale(var(--camera-zoom));
+  }
+  32% {
+    transform: translate(calc(var(--camera-x) - 1.8%), var(--camera-y)) scale(var(--camera-zoom));
+  }
+  46% {
+    transform: translate(calc(var(--camera-x) + 1.9%), var(--camera-y)) scale(var(--camera-zoom));
+  }
+  62% {
+    transform: translate(calc(var(--camera-x) - 1.1%), var(--camera-y)) scale(var(--camera-zoom));
+  }
+  78% {
+    transform: translate(calc(var(--camera-x) + 0.8%), var(--camera-y)) scale(var(--camera-zoom));
   }
 }
 
