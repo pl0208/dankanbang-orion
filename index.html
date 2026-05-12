@@ -122,6 +122,29 @@
         <video class="cutscene-video" id="cutsceneVideo" playsinline muted></video>
       </div>
 
+      <nav class="save-controls" id="saveControls" aria-label="save controls">
+        <button type="button" data-save-action="quick-save">Q.SAVE</button>
+        <button type="button" data-save-action="quick-load">Q.LODE</button>
+        <button type="button" data-save-action="save">SAVE</button>
+        <button type="button" data-save-action="load">LODE</button>
+        <button type="button" data-save-action="auto" id="autoModeButton">AUTO</button>
+      </nav>
+
+      <section class="save-modal save-modal-hidden" id="saveModal" aria-label="save menu">
+        <div class="save-modal-panel">
+          <div class="save-modal-header">
+            <strong id="saveModalTitle">SAVE</strong>
+            <button type="button" class="save-modal-close" id="saveModalClose">X</button>
+          </div>
+          <div class="save-slots" id="saveSlots"></div>
+          <div class="save-pages" id="savePages">
+            <button type="button" data-save-page="0">1</button>
+            <button type="button" data-save-page="1">2</button>
+            <button type="button" data-save-page="2">3</button>
+          </div>
+        </div>
+      </section>
+
       <section class="hud">
         <div class="portrait-frame" id="portraitFrame" aria-hidden="true">
           <img class="portrait" id="portrait" alt="" />
@@ -200,6 +223,7 @@
         <label>
           조절 캐릭터
           <select id="debugCharacter">
+            <option value="cupramuen">cupramuen</option>
             <option value="bina">이빛나</option>
             <option value="pyong">뿅뿅</option>
             <option value="cheolsu">김철수</option>
@@ -256,11 +280,63 @@
         </label>
         <label>
           카메라 확대
-          <input type="range" min="0.5" max="2.5" value="1" step="0.01" data-camera-field="cameraZoom" />
+          <input type="range" min="0.5" max="5" value="1" step="0.01" data-camera-field="cameraZoom" />
         </label>
         <label>
           카메라 이동 시간
           <input type="range" min="0" max="4000" value="650" step="50" data-camera-field="cameraDuration" />
+        </label>
+        <label>
+          Debug Area
+          <input id="debugAreasVisible" type="checkbox" />
+        </label>
+        <label>
+          Move Left
+          <input id="walkBoundLeft" type="range" min="0" max="100" value="26" step="1" />
+        </label>
+        <label>
+          Move Right
+          <input id="walkBoundRight" type="range" min="0" max="100" value="73" step="1" />
+        </label>
+        <label>
+          Move Top
+          <input id="walkBoundTop" type="range" min="0" max="100" value="33" step="1" />
+        </label>
+        <label>
+          Move Bottom
+          <input id="walkBoundBottom" type="range" min="0" max="100" value="83" step="1" />
+        </label>
+        <div class="debug-actions">
+          <button type="button" id="addInteractionBlock">Block Add</button>
+          <button type="button" id="removeInteractionBlock">Block Remove</button>
+        </div>
+        <label>
+          Block
+          <select id="debugBlockSelect"></select>
+        </label>
+        <label>
+          Block X
+          <input id="debugBlockX" type="range" min="0" max="100" value="45" step="1" />
+        </label>
+        <label>
+          Block Y
+          <input id="debugBlockY" type="range" min="0" max="100" value="45" step="1" />
+        </label>
+        <label>
+          Block W
+          <input id="debugBlockWidth" type="range" min="1" max="100" value="10" step="1" />
+        </label>
+        <label>
+          Block H
+          <input id="debugBlockHeight" type="range" min="1" max="100" value="10" step="1" />
+        </label>
+        <label>
+          Block Text
+          <input id="debugBlockText" type="text" value="" />
+        </label>
+        <label>
+          Block Next
+          <input id="debugBlockNext" type="text" value="" />
         </label>
         <pre class="debug-output" id="debugOutput"></pre>
       </aside>

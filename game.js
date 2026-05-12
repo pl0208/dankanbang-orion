@@ -31,13 +31,40 @@ const debugPortraitSprite = document.querySelector("#debugPortraitSprite");
 const debugAreaLayer = document.querySelector("#debugAreaLayer");
 const debugMoveBounds = document.querySelector("#debugMoveBounds");
 const debugInteractionBlocks = document.querySelector("#debugInteractionBlocks");
+const debugAreasVisible = document.querySelector("#debugAreasVisible");
+const addInteractionBlock = document.querySelector("#addInteractionBlock");
+const removeInteractionBlock = document.querySelector("#removeInteractionBlock");
+const debugBlockSelect = document.querySelector("#debugBlockSelect");
+const debugBlockX = document.querySelector("#debugBlockX");
+const debugBlockY = document.querySelector("#debugBlockY");
+const debugBlockWidth = document.querySelector("#debugBlockWidth");
+const debugBlockHeight = document.querySelector("#debugBlockHeight");
+const debugBlockText = document.querySelector("#debugBlockText");
+const debugBlockNext = document.querySelector("#debugBlockNext");
 const speaker = document.querySelector("#speaker");
 const dialogue = document.querySelector("#dialogue");
 const choices = document.querySelector("#choices");
 const advancePrompt = document.querySelector("#advancePrompt");
 const advancePromptFrames = document.querySelectorAll(".advance-prompt-frame");
+const saveControls = document.querySelector("#saveControls");
+const saveModal = document.querySelector("#saveModal");
+const saveModalTitle = document.querySelector("#saveModalTitle");
+const saveModalClose = document.querySelector("#saveModalClose");
+const saveSlots = document.querySelector("#saveSlots");
+const savePages = document.querySelector("#savePages");
+const autoModeButton = document.querySelector("#autoModeButton");
 
 let currentSceneId = story.start;
+const sceneHistory = [];
+let typingTimer = null;
+let typingTarget = null;
+let typingFullText = "";
+let typingComplete = null;
+let saveMode = "save";
+let savePage = 0;
+let isAutoMode = false;
+let autoAdvanceTimer = null;
+let selectedDebugBlockIndex = 0;
 let hasStarted = false;
 let canStart = false;
 let isCutscenePlaying = false;
@@ -54,9 +81,30 @@ let keyPressCounter = 0;
 
 const wipeColumns = 16;
 const wipeRows = 9;
+const textTypeInterval = 37;
+const autoAdvanceDelay = 700;
+const saveSlotCount = 18;
+const saveSlotsPerPage = 6;
+const saveKeyPrefix = "dankanbang-orion-save-";
+const quickSaveKey = "dankanbang-orion-quick-save";
 
 function applyUiVisibility() {
   document.body.classList.toggle("ui-hidden-mode", isUiHidden);
+}
+
+function clearAutoAdvance() {
+  if (autoAdvanceTimer) {
+    window.clearTimeout(autoAdvanceTimer);
+    autoAdvanceTimer = null;
+  }
+}
+
+function setAutoMode(enabled) {
+  isAutoMode = enabled;
+  autoModeButton.classList.toggle("save-control-active", isAutoMode);
+  if (!isAutoMode) {
+    clearAutoAdvance();
+  }
 }
 
 const characters = {
@@ -85,6 +133,9 @@ const characters = {
   },
   starshipOpen: {
     sprite: "./assets/images/starship-3.png"
+  },
+  cupramuen: {
+    sprite: "./assets/images/cupramuen.png"
   }
 };
 
@@ -120,12 +171,20 @@ const stageImageDefaults = {
   }
 };
 
+const scenePrefixImageDefaults = {
+  chapter1_: {
+    bina: { sprite: "./assets/images/characters/bina-sprite-2.png" }
+  }
+};
+
 const sceneBackgrounds = {
   room: "./assets/images/scene-room.png",
   room2: "./assets/images/scene-room-2.png",
   room3: "./assets/images/scene-room-3.png",
   room4: "./assets/images/scene-room-4.png",
   room5: "./assets/images/scene-room-5.png",
+  room6: "./assets/images/scene-room-6.png",
+  room7: "./assets/images/scene-room-7.png",
   roof: "./assets/images/scene-roof.png",
   roof2: "./assets/images/scene-roof2.png",
   roof3: "./assets/images/scene-roof3.png",
@@ -142,6 +201,8 @@ const stageCameraDefaults = {
   room3: { x: 0, y: 0, zoom: 1, duration: 650 },
   room4: { x: 0, y: 0, zoom: 1, duration: 650 },
   room5: { x: 0, y: 0, zoom: 1, duration: 650 },
+  room6: { x: 0, y: 0, zoom: 1, duration: 650 },
+  room7: { x: 0, y: 0, zoom: 1, duration: 650 },
   roof: { x: 0, y: -12, zoom: 1, duration: 650 },
   roof2: { x: 0, y: -12, zoom: 1, duration: 650 },
   roof3: { x: 0, y: -12, zoom: 1, duration: 650 },
@@ -224,6 +285,16 @@ const characterTunings = {
     stageX: 24,
     stageY: 77.8,
     stageSize: 26,
+    stageScaleX: 100,
+    stageScaleY: 100,
+    portraitX: 50,
+    portraitY: 25,
+    portraitZoom: 170
+  },
+  cupramuen: {
+    stageX: 48,
+    stageY: 66,
+    stageSize: 8,
     stageScaleX: 100,
     stageScaleY: 100,
     portraitX: 50,
@@ -470,7 +541,31 @@ const sceneCharacterTunings = {
       portraitZoom: 170
     }
   },
+  crash_after: {
+    starshipCrash: {
+      stageX: 24,
+      stageY: 77.8,
+      stageSize: 26,
+      stageScaleX: 100,
+      stageScaleY: 100,
+      portraitX: 50,
+      portraitY: 25,
+      portraitZoom: 170
+    }
+  },
   crash_smell: {
+    starshipCrash: {
+      stageX: 24,
+      stageY: 77.8,
+      stageSize: 26,
+      stageScaleX: 100,
+      stageScaleY: 100,
+      portraitX: 50,
+      portraitY: 25,
+      portraitZoom: 170
+    }
+  },
+  crash_bina_cough: {
     starshipCrash: {
       stageX: 24,
       stageY: 77.8,
@@ -494,11 +589,70 @@ const sceneCharacterTunings = {
       portraitZoom: 170
     }
   },
+  crash_capsule_size: {
+    starshipCrash: {
+      stageX: 24,
+      stageY: 77.8,
+      stageSize: 26,
+      stageScaleX: 100,
+      stageScaleY: 100,
+      portraitX: 50,
+      portraitY: 25,
+      portraitZoom: 170
+    }
+  },
+  crash_capsule_glow: {
+    starshipCrash: {
+      stageX: 24,
+      stageY: 77.8,
+      stageSize: 26,
+      stageScaleX: 100,
+      stageScaleY: 100,
+      portraitX: 50,
+      portraitY: 25,
+      portraitZoom: 170
+    }
+  },
   alien_door: {
     starshipCrash: {
       stageX: 24,
       stageY: 77.8,
       stageSize: 26,
+      stageScaleX: 100,
+      stageScaleY: 100,
+      portraitX: 50,
+      portraitY: 25,
+      portraitZoom: 170
+    }
+  }
+};
+
+const scenePrefixCharacterTunings = {
+  chapter1_: {
+    bina: {
+      stageX: 39,
+      stageY: 53.5,
+      stageSize: 15.3,
+      stageScaleX: 100,
+      stageScaleY: 100,
+      portraitX: 48,
+      portraitY: 23,
+      portraitZoom: 170
+    },
+    pyong: {
+      stageX: 58,
+      stageY: 54.3,
+      stageSize: 13.5,
+      stageScaleX: 95,
+      stageScaleY: 103,
+      portraitX: 50,
+      portraitY: 11,
+      portraitZoom: 170
+    },
+    cupramuen: {
+      stageX: 54,
+      stageY: 58.2,
+      stageSize: 4,
       stageScaleX: 100,
       stageScaleY: 100,
       portraitX: 50,
@@ -654,7 +808,8 @@ function setImage(image, src, visibleClass, onLoad, onError) {
 }
 
 function getCharacterTuning(characterId) {
-  return sceneCharacterTunings[currentSceneId]?.[characterId] ?? stageCharacterTunings[currentStageName]?.[characterId] ?? characterTunings[characterId] ?? characterTunings.bina;
+  const scenePrefix = Object.keys(scenePrefixCharacterTunings).find((prefix) => currentSceneId.startsWith(prefix));
+  return sceneCharacterTunings[currentSceneId]?.[characterId] ?? scenePrefixCharacterTunings[scenePrefix]?.[characterId] ?? stageCharacterTunings[currentStageName]?.[characterId] ?? characterTunings[characterId] ?? characterTunings.bina;
 }
 
 function editableStageName() {
@@ -668,6 +823,11 @@ function editableWalkStageName() {
 function editableCharacterTuning(characterId) {
   if (sceneCharacterTunings[currentSceneId]?.[characterId]) {
     return sceneCharacterTunings[currentSceneId][characterId];
+  }
+
+  const scenePrefix = Object.keys(scenePrefixCharacterTunings).find((prefix) => currentSceneId.startsWith(prefix));
+  if (scenePrefixCharacterTunings[scenePrefix]?.[characterId]) {
+    return scenePrefixCharacterTunings[scenePrefix][characterId];
   }
 
   const stageName = editableStageName();
@@ -689,9 +849,11 @@ function sceneImagesFor(characterId, sceneId = currentSceneId) {
 }
 
 function characterImagesFor(characterId, stageName = currentStageName, sceneId = currentSceneId) {
+  const scenePrefix = Object.keys(scenePrefixImageDefaults).find((prefix) => sceneId.startsWith(prefix));
   return {
     ...(characters[characterId] ?? {}),
     ...(stageImageDefaults[stageName]?.[characterId] ?? {}),
+    ...(scenePrefixImageDefaults[scenePrefix]?.[characterId] ?? {}),
     ...sceneImagesFor(characterId, sceneId)
   };
 }
@@ -720,6 +882,15 @@ function applyCharacterTuning(characterId) {
   document.documentElement.style.setProperty("--portrait-zoom", `${values.portraitZoom}%`);
 }
 
+function isChapter1CupRamenVisible() {
+  if (!currentSceneId.startsWith("chapter1_")) {
+    return false;
+  }
+
+  const sceneOrder = Object.keys(story.scenes);
+  return sceneOrder.indexOf(currentSceneId) >= sceneOrder.indexOf("chapter1_ramen_bag");
+}
+
 function actorIdsForScene(scene) {
   if (scene.actors && scene.actors.length === 0) {
     return [];
@@ -731,6 +902,10 @@ function actorIdsForScene(scene) {
 
   if (scene.stage === "alien") {
     return ["bina", "starshipOpen", "pyong"];
+  }
+
+  if (scene.stage?.startsWith("room") && currentSceneId.startsWith("chapter1_")) {
+    return isChapter1CupRamenVisible() ? ["bina", "pyong", "cupramuen"] : ["bina", "pyong"];
   }
 
   if (scene.character) {
@@ -755,7 +930,9 @@ function renderStageActors(actorIds = []) {
     const actor = document.createElement("img");
     const scaleX = values.stageScaleX / 100;
     const scaleY = values.stageScaleY / 100;
-    const shouldFlip = actorId === "pyong" && currentStageName === "alien";
+    const shouldFlip =
+      (actorId === "pyong" && currentStageName === "alien") ||
+      (actorId === "bina" && currentSceneId.startsWith("chapter1_"));
     const directionX = shouldFlip ? -1 : 1;
 
     actor.className = "stage-actor";
@@ -819,16 +996,119 @@ function renderCharacter(characterId, options = {}) {
   }
 }
 
+function clearTyping() {
+  if (typingTimer) {
+    window.clearInterval(typingTimer);
+    typingTimer = null;
+  }
+
+  document.body.classList.remove("text-typing");
+  typingTarget = null;
+  typingFullText = "";
+  typingComplete = null;
+}
+
+function isTypingText() {
+  return Boolean(typingTimer);
+}
+
+function finishTyping() {
+  if (!typingTarget) {
+    return false;
+  }
+
+  const complete = typingComplete;
+  if (typingTimer) {
+    window.clearInterval(typingTimer);
+    typingTimer = null;
+  }
+
+  document.body.classList.remove("text-typing");
+  typingTarget.textContent = typingFullText;
+  typingTarget = null;
+  typingFullText = "";
+  typingComplete = null;
+  complete?.();
+  return true;
+}
+
+function typeText(target, text, onComplete) {
+  clearTyping();
+  typingTarget = target;
+  typingFullText = text ?? "";
+  typingComplete = onComplete;
+  target.textContent = "";
+  document.body.classList.add("text-typing");
+
+  if (!typingFullText) {
+    finishTyping();
+    return;
+  }
+
+  const characters = Array.from(typingFullText);
+  const interval = textTypeInterval;
+  let visibleLength = 0;
+
+  typingTimer = window.setInterval(() => {
+    visibleLength += 1;
+    target.textContent = characters.slice(0, visibleLength).join("");
+
+    if (visibleLength >= characters.length) {
+      finishTyping();
+    }
+  }, interval);
+}
+
 function hideNarrationPanel() {
+  clearTyping();
   narrationPanel.classList.add("narration-panel-hidden");
   narrationText.textContent = "";
   narrationChoices.replaceChildren();
 }
 
-function renderScene(sceneId) {
+function showSceneChoices(sceneChoices, isCenteredText) {
+  const choiceContainer = isCenteredText ? narrationChoices : choices;
+  sceneChoices.forEach((choice) => {
+    const button = document.createElement("button");
+    button.className = "choice";
+    button.type = "button";
+    button.textContent = choice.text;
+    button.addEventListener("click", () => renderScene(choice.next));
+    choiceContainer.append(button);
+  });
+}
+
+function revealSceneControls(sceneChoices, scene, isCenteredText) {
+  showSceneChoices(sceneChoices, isCenteredText);
+  advancePrompt.classList.toggle(
+    "advance-prompt-hidden",
+    isCenteredText || sceneChoices.length > 0 || !scene.next
+  );
+  scheduleAutoAdvance(sceneChoices, scene);
+}
+
+function scheduleAutoAdvance(sceneChoices, scene) {
+  clearAutoAdvance();
+
+  if (!isAutoMode || sceneChoices.length > 0 || !scene.next || walkMode || isCutscenePlaying) {
+    return;
+  }
+
+  autoAdvanceTimer = window.setTimeout(() => {
+    autoAdvanceTimer = null;
+    advanceScene();
+  }, autoAdvanceDelay);
+}
+
+function renderScene(sceneId, options = {}) {
   stopWalkMode();
+  clearTyping();
+  clearAutoAdvance();
   const scene = story.scenes[sceneId];
   const sceneChoices = scene.choices ?? [];
+  if (options.trackHistory !== false && currentSceneId && currentSceneId !== sceneId && story.scenes[currentSceneId]) {
+    sceneHistory.push(currentSceneId);
+  }
   currentSceneId = sceneId;
   syncSceneImageControls();
   setStage(scene.stage);
@@ -853,12 +1133,12 @@ function renderScene(sceneId) {
   choices.replaceChildren();
   narrationChoices.replaceChildren();
   narrationPanel.classList.toggle("narration-panel-hidden", !isCenteredText);
-  narrationText.textContent = isCenteredText ? scene.text : "";
+  narrationText.textContent = "";
   hud.classList.toggle("hud-hidden", isCenteredText);
 
   speaker.textContent = isCenteredText ? "" : scene.speaker;
   speaker.hidden = isCenteredText;
-  dialogue.textContent = isCenteredText ? "" : scene.text;
+  dialogue.textContent = "";
 
   renderStageActors(actorIdsForScene(scene));
   stageCharacter.hidden = true;
@@ -866,23 +1146,168 @@ function renderScene(sceneId) {
   stageCharacterSheet.hidden = true;
   stageCharacterSheet.classList.remove("stage-character-sheet-visible");
   renderCharacter(scene.character, { renderStageSprite: false });
-  advancePrompt.classList.toggle(
-    "advance-prompt-hidden",
-    sceneChoices.length > 0 || !scene.next
-  );
-
-  sceneChoices.forEach((choice) => {
-    const button = document.createElement("button");
-    button.className = "choice";
-    button.type = "button";
-    button.textContent = choice.text;
-    button.addEventListener("click", () => renderScene(choice.next));
-    if (isCenteredText) {
-      narrationChoices.append(button);
-    } else {
-      choices.append(button);
-    }
+  advancePrompt.classList.add("advance-prompt-hidden");
+  typeText(isCenteredText ? narrationText : dialogue, scene.text, () => {
+    revealSceneControls(sceneChoices, scene, isCenteredText);
   });
+}
+
+function goBackScene() {
+  if (walkMode && !walkMode.interactionText) {
+    return false;
+  }
+
+  const previousSceneId = sceneHistory.pop();
+  if (!previousSceneId || !story.scenes[previousSceneId]) {
+    return false;
+  }
+
+  stopCutscene();
+  stopWalkMode();
+  clearAutoAdvance();
+  heldKeys.clear();
+  keyPressOrder.clear();
+  interactionLockedUntil = performance.now() + 300;
+  renderScene(previousSceneId, { trackHistory: false });
+  return true;
+}
+
+function saveKey(slotIndex) {
+  return `${saveKeyPrefix}${slotIndex}`;
+}
+
+function saveTimestamp() {
+  return new Date().toLocaleString("ko-KR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+function createSaveData() {
+  return {
+    version: 1,
+    sceneId: currentSceneId,
+    sceneHistory: [...sceneHistory],
+    isAutoMode,
+    savedAt: saveTimestamp()
+  };
+}
+
+function readSaveData(slotIndex) {
+  const raw = window.localStorage.getItem(saveKey(slotIndex));
+  if (!raw) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function writeSaveData(slotIndex) {
+  if (!story.scenes[currentSceneId]) {
+    return false;
+  }
+
+  window.localStorage.setItem(saveKey(slotIndex), JSON.stringify(createSaveData()));
+  return true;
+}
+
+function writeQuickSave() {
+  if (!story.scenes[currentSceneId]) {
+    return false;
+  }
+
+  window.localStorage.setItem(quickSaveKey, JSON.stringify(createSaveData()));
+  return true;
+}
+
+function loadSaveData(data) {
+  if (!data?.sceneId || !story.scenes[data.sceneId]) {
+    return false;
+  }
+
+  hasStarted = true;
+  canStart = true;
+  stopCutscene();
+  stopWalkMode();
+  clearTyping();
+  heldKeys.clear();
+  keyPressOrder.clear();
+  sceneHistory.length = 0;
+  if (Array.isArray(data.sceneHistory)) {
+    sceneHistory.push(...data.sceneHistory.filter((sceneId) => story.scenes[sceneId]));
+  }
+  setAutoMode(Boolean(data.isAutoMode));
+  interactionLockedUntil = performance.now() + 300;
+  titleScreen.classList.add("title-screen-hidden");
+  encounterWipe.classList.remove("encounter-wipe-active", "encounter-wipe-exit");
+  renderScene(data.sceneId, { trackHistory: false });
+  return true;
+}
+
+function readQuickSave() {
+  const raw = window.localStorage.getItem(quickSaveKey);
+  if (!raw) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function closeSaveModal() {
+  saveModal.classList.add("save-modal-hidden");
+}
+
+function renderSaveSlots() {
+  saveSlots.replaceChildren();
+  const startSlot = savePage * saveSlotsPerPage + 1;
+  const endSlot = Math.min(saveSlotCount, startSlot + saveSlotsPerPage - 1);
+
+  for (let slot = startSlot; slot <= endSlot; slot += 1) {
+    const data = readSaveData(slot);
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "save-slot";
+    button.dataset.saveSlot = String(slot);
+    button.innerHTML = data
+      ? `<strong>SLOT ${slot}</strong><span>${data.savedAt}</span><span>${data.sceneId}</span>`
+      : `<strong>SLOT ${slot}</strong><span>EMPTY</span>`;
+    saveSlots.append(button);
+  }
+
+  savePages.querySelectorAll("[data-save-page]").forEach((button) => {
+    button.classList.toggle("save-page-active", Number(button.dataset.savePage) === savePage);
+  });
+}
+
+function openSaveModal(mode) {
+  saveMode = mode;
+  saveModalTitle.textContent = mode === "save" ? "SAVE" : "LODE";
+  renderSaveSlots();
+  saveModal.classList.remove("save-modal-hidden");
+}
+
+function handleSaveSlot(slotIndex) {
+  if (saveMode === "save") {
+    writeSaveData(slotIndex);
+    renderSaveSlots();
+    return;
+  }
+
+  const data = readSaveData(slotIndex);
+  if (loadSaveData(data)) {
+    closeSaveModal();
+  }
 }
 
 function startWalkMode(scene) {
@@ -998,16 +1423,16 @@ function updateWalkMode(timestamp) {
     return;
   }
 
-  let xAxis = movementAxis(["a", "arrowleft"], ["d", "arrowright"]);
-  let yAxis = movementAxis(["w", "arrowup"], ["s", "arrowdown"]);
+  let xAxis = movementAxis(["arrowleft"], ["arrowright"]);
+  let yAxis = movementAxis(["arrowup"], ["arrowdown"]);
   if (walkMode.interactionText) {
     setWalkSprite(walkMode.direction);
     walkAnimationFrame = window.requestAnimationFrame(updateWalkMode);
     return;
   }
 
-  const latestHorizontal = latestPressedOrder(["a", "arrowleft", "d", "arrowright"]);
-  const latestVertical = latestPressedOrder(["w", "arrowup", "s", "arrowdown"]);
+  const latestHorizontal = latestPressedOrder(["arrowleft", "arrowright"]);
+  const latestVertical = latestPressedOrder(["arrowup", "arrowdown"]);
 
   if (xAxis !== 0 && yAxis !== 0) {
     if (latestHorizontal > latestVertical) {
@@ -1088,15 +1513,19 @@ function interactWithActiveBlock() {
   }
 
   const block = walkMode.interactions[walkMode.activeBlockIndex];
+  clearTyping();
   walkMode.interactionText = block.text;
   hud.classList.remove("hud-hidden");
   speaker.textContent = block.speaker ?? "이빛나";
-  dialogue.textContent = block.text;
+  dialogue.textContent = "";
   choices.replaceChildren();
   renderCharacter(block.character ?? "bina");
   setStageCharacterPosition(walkMode.x, walkMode.y);
   setWalkSprite(walkMode.direction);
-  advancePrompt.classList.remove("advance-prompt-hidden");
+  advancePrompt.classList.add("advance-prompt-hidden");
+  typeText(dialogue, block.text, () => {
+    advancePrompt.classList.remove("advance-prompt-hidden");
+  });
 
   if (block.next) {
     walkMode.pendingNextSceneId = block.next;
@@ -1152,6 +1581,13 @@ function stopCutscene() {
 }
 
 function advanceScene() {
+  if (isTypingText()) {
+    finishTyping();
+    return;
+  }
+
+  clearAutoAdvance();
+
   if (walkMode?.interactionText) {
     const nextSceneId = walkMode.pendingNextSceneId;
     walkMode.interactionText = null;
@@ -1199,6 +1635,151 @@ function applyCameraTuning() {
   document.querySelectorAll("[data-camera-field]").forEach((input) => {
     input.value = cameraTuning[input.dataset.cameraField];
   });
+}
+
+function walkTuningText() {
+  const values = editableWalkTuning();
+  return [
+    `/* walkBounds: left ${values.walkBoundLeft}, right ${values.walkBoundRight}, top ${values.walkBoundTop}, bottom ${values.walkBoundBottom} */`,
+    `/* interactionBlocks: ${JSON.stringify(interactionBlocks)} */`
+  ].join("\n");
+}
+
+function syncWalkDebugControls() {
+  const values = editableWalkTuning();
+  ["walkBoundLeft", "walkBoundRight", "walkBoundTop", "walkBoundBottom"].forEach((key) => {
+    const input = document.querySelector(`#${key}`);
+    if (input) {
+      input.value = values[key];
+    }
+  });
+}
+
+function applyWalkDebugControls() {
+  const values = editableWalkTuning();
+  ["walkBoundLeft", "walkBoundRight", "walkBoundTop", "walkBoundBottom"].forEach((key) => {
+    const input = document.querySelector(`#${key}`);
+    if (input) {
+      values[key] = Number(input.value);
+    }
+  });
+  Object.assign(walkTuning, values);
+  renderDebugAreas();
+  debugOutput.textContent = tuningText();
+}
+
+function selectedInteractionBlock() {
+  return interactionBlocks[selectedDebugBlockIndex] ?? null;
+}
+
+function syncDebugBlockSelect() {
+  debugBlockSelect.replaceChildren();
+  interactionBlocks.forEach((_, index) => {
+    const option = document.createElement("option");
+    option.value = String(index);
+    option.textContent = `Block ${index + 1}`;
+    debugBlockSelect.append(option);
+  });
+  selectedDebugBlockIndex = Math.max(0, Math.min(selectedDebugBlockIndex, interactionBlocks.length - 1));
+  debugBlockSelect.value = String(selectedDebugBlockIndex);
+}
+
+function syncDebugBlockControls() {
+  syncDebugBlockSelect();
+  const block = selectedInteractionBlock();
+  if (!block) {
+    return;
+  }
+
+  debugBlockX.value = block.x;
+  debugBlockY.value = block.y;
+  debugBlockWidth.value = block.width;
+  debugBlockHeight.value = block.height;
+  debugBlockText.value = block.text ?? "";
+  debugBlockNext.value = block.next ?? "";
+}
+
+function applyDebugBlockControls() {
+  const block = selectedInteractionBlock();
+  if (!block) {
+    return;
+  }
+
+  block.x = Number(debugBlockX.value);
+  block.y = Number(debugBlockY.value);
+  block.width = Number(debugBlockWidth.value);
+  block.height = Number(debugBlockHeight.value);
+  block.text = debugBlockText.value;
+  if (debugBlockNext.value.trim()) {
+    block.next = debugBlockNext.value.trim();
+  } else {
+    delete block.next;
+  }
+  renderDebugAreas();
+  debugOutput.textContent = tuningText();
+}
+
+function renderDebugAreas() {
+  if (!debugAreasVisible?.checked) {
+    debugAreaLayer.classList.remove("debug-area-layer-visible");
+    return;
+  }
+
+  const values = editableWalkTuning();
+  debugAreaLayer.classList.add("debug-area-layer-visible");
+  debugMoveBounds.style.left = `${values.walkBoundLeft}%`;
+  debugMoveBounds.style.top = `${values.walkBoundTop}%`;
+  debugMoveBounds.style.width = `${Math.max(0, values.walkBoundRight - values.walkBoundLeft)}%`;
+  debugMoveBounds.style.height = `${Math.max(0, values.walkBoundBottom - values.walkBoundTop)}%`;
+  debugInteractionBlocks.replaceChildren();
+  interactionBlocks.forEach((block, index) => {
+    const element = document.createElement("div");
+    element.className = "debug-interaction-block";
+    element.dataset.label = `${index + 1}`;
+    element.style.left = `${block.x}%`;
+    element.style.top = `${block.y}%`;
+    element.style.width = `${block.width}%`;
+    element.style.height = `${block.height}%`;
+    debugInteractionBlocks.append(element);
+  });
+}
+
+function setupAreaDebugControls() {
+  if (!debugAreasVisible) {
+    return;
+  }
+
+  debugAreasVisible.addEventListener("change", renderDebugAreas);
+  ["walkBoundLeft", "walkBoundRight", "walkBoundTop", "walkBoundBottom"].forEach((key) => {
+    document.querySelector(`#${key}`)?.addEventListener("input", applyWalkDebugControls);
+  });
+  debugBlockSelect.addEventListener("change", () => {
+    selectedDebugBlockIndex = Number(debugBlockSelect.value);
+    syncDebugBlockControls();
+    renderDebugAreas();
+  });
+  [debugBlockX, debugBlockY, debugBlockWidth, debugBlockHeight, debugBlockText, debugBlockNext].forEach((input) => {
+    input.addEventListener("input", applyDebugBlockControls);
+  });
+  addInteractionBlock.addEventListener("click", () => {
+    interactionBlocks.push({ x: 45, y: 45, width: 10, height: 10, text: "" });
+    selectedDebugBlockIndex = interactionBlocks.length - 1;
+    syncDebugBlockControls();
+    renderDebugAreas();
+    debugOutput.textContent = tuningText();
+  });
+  removeInteractionBlock.addEventListener("click", () => {
+    if (interactionBlocks.length <= 0) {
+      return;
+    }
+    interactionBlocks.splice(selectedDebugBlockIndex, 1);
+    selectedDebugBlockIndex = Math.max(0, selectedDebugBlockIndex - 1);
+    syncDebugBlockControls();
+    renderDebugAreas();
+    debugOutput.textContent = tuningText();
+  });
+  syncWalkDebugControls();
+  syncDebugBlockControls();
 }
 
 function applySceneCamera(scene) {
@@ -1272,7 +1853,9 @@ function tuningText() {
   const characterId = activeDebugCharacterId();
   const characterValues = editableCharacterTuning(characterId);
   const hasSceneTuning = Boolean(sceneCharacterTunings[currentSceneId]?.[characterId]);
-  const tuningName = hasSceneTuning ? currentSceneId : editableStageName();
+  const scenePrefix = Object.keys(scenePrefixCharacterTunings).find((prefix) => currentSceneId.startsWith(prefix));
+  const hasScenePrefixTuning = Boolean(scenePrefixCharacterTunings[scenePrefix]?.[characterId]);
+  const tuningName = hasSceneTuning ? currentSceneId : hasScenePrefixTuning ? scenePrefix : editableStageName();
 
   return [
     `/* ${tuningName} / ${characterId} */`,
@@ -1295,7 +1878,9 @@ function tuningText() {
     `  --advance-prompt-x: ${tuning.advancePromptX}%;`,
     `  --advance-prompt-y: ${tuning.advancePromptY}%;`,
     `  --advance-prompt-size: ${tuning.advancePromptSize}%;`,
-    "}"
+    "}",
+    "",
+    walkTuningText()
   ].join("\n");
 }
 
@@ -1304,6 +1889,7 @@ function applyTuning() {
   applyCharacterTuning(activeDebugCharacterId());
   applyCameraTuning();
   refreshStageActors();
+  renderDebugAreas();
   document.documentElement.style.setProperty("--dialogue-opacity", tuning.dialogueOpacity);
   document.documentElement.style.setProperty("--dialogue-width", `${tuning.dialogueWidth}%`);
   document.documentElement.style.setProperty("--dialogue-min-height", `${tuning.dialogueHeight}px`);
@@ -1327,11 +1913,13 @@ function setupDebugPanel() {
   debugPanel.classList.add("debug-panel-visible");
   stageJumpTabs.classList.add("stage-jump-tabs-visible");
   debugCharacterStage.value = currentStageName;
+  debugCharacter.value = "bina";
   syncTuningFromCharacter(activeDebugCharacterId());
   setupCameraControls(debugPanel, applyTuning);
 
   debugCharacterStage.addEventListener("change", () => {
     syncTuningFromCharacter(activeDebugCharacterId());
+    syncWalkDebugControls();
     applyTuning();
   });
 
@@ -1351,6 +1939,7 @@ function setupDebugPanel() {
   });
 
   setupSceneImageControls();
+  setupAreaDebugControls();
 
   copyTuning.addEventListener("click", async () => {
     const text = tuningText();
@@ -1480,11 +2069,25 @@ document.addEventListener("keydown", (event) => {
   const isAdvanceKey = key === "a" || key === "enter" || key === " ";
   const isNarrationVisible = !narrationPanel.classList.contains("narration-panel-hidden");
 
+  if (!saveModal.classList.contains("save-modal-hidden")) {
+    if (key === "escape") {
+      closeSaveModal();
+    }
+    return;
+  }
+
   if (key === "s") {
     event.preventDefault();
     isUiHidden = !isUiHidden;
     applyUiVisibility();
     return;
+  }
+
+  if (key === "d" && hasStarted && !event.repeat && (!walkMode || walkMode.interactionText)) {
+    if (goBackScene()) {
+      event.preventDefault();
+      return;
+    }
   }
 
   if (isNarrationVisible && isAdvanceKey) {
@@ -1572,10 +2175,11 @@ function jumpToScene(sceneId) {
   stopWalkMode();
   heldKeys.clear();
   keyPressOrder.clear();
+  sceneHistory.length = 0;
   interactionLockedUntil = 0;
   titleScreen.classList.add("title-screen-hidden");
   encounterWipe.classList.remove("encounter-wipe-active", "encounter-wipe-exit");
-  renderScene(sceneId);
+  renderScene(sceneId, { trackHistory: false });
 }
 
 startPrompt.addEventListener("animationend", (event) => {
@@ -1603,6 +2207,66 @@ stageJumpTabs.addEventListener("click", (event) => {
   jumpToScene(button.dataset.jumpScene);
 });
 
+saveControls.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-save-action]");
+  if (!button) {
+    return;
+  }
+
+  event.preventDefault();
+  const action = button.dataset.saveAction;
+
+  if (action === "quick-save") {
+    writeQuickSave();
+    return;
+  }
+
+  if (action === "quick-load") {
+    loadSaveData(readQuickSave());
+    return;
+  }
+
+  if (action === "auto") {
+    setAutoMode(!isAutoMode);
+    if (isAutoMode && !isTypingText()) {
+      const scene = story.scenes[currentSceneId];
+      if (scene) {
+        scheduleAutoAdvance(scene.choices ?? [], scene);
+      }
+    }
+    return;
+  }
+
+  openSaveModal(action);
+});
+
+saveModalClose.addEventListener("click", closeSaveModal);
+
+saveModal.addEventListener("click", (event) => {
+  if (event.target === saveModal) {
+    closeSaveModal();
+  }
+});
+
+saveSlots.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-save-slot]");
+  if (!button) {
+    return;
+  }
+
+  handleSaveSlot(Number(button.dataset.saveSlot));
+});
+
+savePages.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-save-page]");
+  if (!button) {
+    return;
+  }
+
+  savePage = Number(button.dataset.savePage);
+  renderSaveSlots();
+});
+
 dialogue.addEventListener("click", advanceScene);
 advancePrompt.addEventListener("click", advanceScene);
 narrationPanel.addEventListener("click", advanceScene);
@@ -1610,4 +2274,4 @@ narrationPanel.addEventListener("click", advanceScene);
 setupDebugPanel();
 setupDraggablePanel(debugPanel);
 buildEncounterWipe();
-renderScene(currentSceneId);
+renderScene(currentSceneId, { trackHistory: false });

@@ -28,6 +28,8 @@
   --dialogue-opacity: 0;
   --dialogue-width: 83%;
   --dialogue-min-height: 0px;
+  --narration-bottom: calc((100vh - var(--scene-canvas-height)) / 2 + 4vh);
+  --narration-height: clamp(118px, 16vh, 168px);
   --advance-prompt-x: 96%;
   --advance-prompt-y: 84%;
   --advance-prompt-size: 7.7%;
@@ -484,6 +486,7 @@ img {
 .ui-hidden-mode .narration-panel,
 .ui-hidden-mode .advance-prompt,
 .ui-hidden-mode .overhead-prompt,
+.ui-hidden-mode .save-controls,
 .ui-hidden-mode .stage-jump-tabs,
 .ui-hidden-mode .debug-panel {
   opacity: 0;
@@ -565,13 +568,13 @@ img {
 }
 
 .narration-panel {
-  position: absolute;
+  position: fixed;
   left: 50%;
-  bottom: calc((100vh - var(--scene-canvas-height)) / 2 + 4vh);
+  bottom: var(--narration-bottom);
   z-index: 11;
   display: grid;
   width: var(--dialogue-width);
-  min-height: var(--dialogue-min-height);
+  min-height: var(--narration-height);
   place-items: center;
   padding: 26px 36px 32px;
   border-radius: 8px;
@@ -582,6 +585,12 @@ img {
   transform: translateX(-50%);
   backdrop-filter: blur(5px);
   cursor: pointer;
+}
+
+.stage-roof .narration-panel,
+.stage-crash .narration-panel,
+.stage-alien .narration-panel {
+  bottom: calc(var(--narration-bottom) - 12%);
 }
 
 .narration-panel-hidden {
@@ -610,6 +619,147 @@ img {
   bottom: 14px;
   width: clamp(24px, 4vw, 42px);
   aspect-ratio: 1;
+}
+
+.text-typing .narration-prompt {
+  display: none;
+}
+
+.save-controls {
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  z-index: 13;
+  display: flex;
+  gap: 18px;
+  width: auto;
+  max-width: calc(100vw - 36px);
+  pointer-events: auto;
+}
+
+.save-controls button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: rgba(243, 240, 232, 0.78);
+  font-size: clamp(0.76rem, 1.4vw, 0.98rem);
+  font-weight: 900;
+  letter-spacing: 0;
+  cursor: pointer;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+}
+
+.save-controls button:hover,
+.save-controls button:focus-visible {
+  outline: none;
+  color: var(--accent);
+}
+
+.save-controls button.save-control-active {
+  color: var(--accent-2);
+}
+
+.save-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.56);
+  backdrop-filter: blur(4px);
+}
+
+.save-modal-hidden {
+  display: none;
+}
+
+.save-modal-panel {
+  width: min(760px, 94vw);
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background: rgba(7, 8, 12, 0.94);
+  box-shadow: 0 24px 90px rgba(0, 0, 0, 0.58);
+}
+
+.save-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  color: var(--ink);
+}
+
+.save-modal-close {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.save-slots {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.save-slot {
+  min-height: 112px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.save-slot:hover,
+.save-slot:focus-visible {
+  outline: none;
+  border-color: rgba(145, 255, 186, 0.7);
+  background: rgba(145, 255, 186, 0.1);
+}
+
+.save-slot strong {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--accent);
+  font-size: 0.86rem;
+}
+
+.save-slot span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.save-pages {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.save-pages button {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.save-pages button.save-page-active {
+  border-color: rgba(145, 255, 186, 0.7);
+  background: rgba(145, 255, 186, 0.16);
+  color: var(--accent);
 }
 
 .hud {
@@ -828,6 +978,22 @@ img {
   cursor: pointer;
 }
 
+.debug-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 12px 0 8px;
+}
+
+.debug-actions button {
+  min-height: 30px;
+  border: 1px solid rgba(145, 255, 186, 0.38);
+  border-radius: 5px;
+  background: rgba(145, 255, 186, 0.1);
+  color: var(--ink);
+  cursor: pointer;
+}
+
 .debug-panel label {
   display: grid;
   grid-template-columns: 92px minmax(0, 1fr);
@@ -1007,6 +1173,11 @@ img {
 }
 
 @media (max-width: 700px) {
+  :root {
+    --narration-bottom: calc((100vh - var(--scene-canvas-height)) / 2 + 10px);
+    --narration-height: clamp(108px, 18vh, 156px);
+  }
+
   .game-shell {
     padding: 0;
   }
