@@ -1,6 +1,496 @@
 const story = {
   start: "prologue_title",
   scenes: {
+    day1_title: {
+      speaker: "프롤로그",
+      character: "bina",
+      text: "별이 떨어지던 밤",
+      stage: "room",
+      next: "day1_room_intro"
+    },
+    day1_room_intro: {
+      speaker: "나레이션",
+      character: "bina",
+      text: "새벽 두 시. 옥탑방 안은 모니터의 푸른빛만으로 겨우 밝아져 있었다.",
+      stage: "room",
+      next: "day1_room_detail"
+    },
+    day1_room_detail: {
+      speaker: "나레이션",
+      character: "bina",
+      text: "낮에는 햇빛이 너무 세게 들고, 밤에는 바람 소리가 벽을 긁고 지나가는 방. 책상 위에는 먹다 남은 컵라면 용기와 구겨진 영수증, 그리고 한 달째 열려 있는 포트폴리오 파일이 놓여 있었다.",
+      stage: "room",
+      next: "day1_defeat"
+    },
+    day1_defeat: {
+      speaker: "나레이션",
+      character: "bina",
+      text: "화면 중앙에는 붉은 글자가 떠 있었다. 패배. 오늘만 열두 번째였다.",
+      stage: "room",
+      next: "day1_bina_sigh"
+    },
+    day1_bina_sigh: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "하…… 게임에서도 지네. 진짜 대단하다, 이빛나. 현실에서도 지고, 게임에서도 지고.",
+      stage: "room",
+      next: "day1_room_narrow"
+    },
+    day1_room_narrow: {
+      speaker: "나레이션",
+      character: "bina",
+      text: "빛나는 의자를 뒤로 밀었다. 작은 옥탑방 안에서 의자 바퀴가 바닥을 긁는 소리가 유난히 크게 울렸다.",
+      stage: "room",
+      next: "day1_room_shape"
+    },
+    day1_room_shape: {
+      speaker: "나레이션",
+      character: "bina",
+      text: "방 한쪽에는 작은 냉장고, 반대편에는 접이식 침대, 그 사이에는 낡은 책상 하나가 겨우 들어가 있었다. 이 방은 늘 좁았다. 하지만 오늘따라 더 좁게 느껴졌다.",
+      stage: "room",
+      next: "day1_tomorrow"
+    },
+    day1_tomorrow: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "내일은 해야지.",
+      stage: "room",
+      next: "day1_empty_words"
+    },
+    day1_empty_words: {
+      speaker: "나레이션",
+      character: "bina",
+      text: "그 말은 어제도 했다. 그저께도 했다. 지난달에도 했다. 이제는 스스로도 믿지 않는 말이었다.",
+      stage: "room",
+      choices: [
+        { text: "포트폴리오 파일을 다시 열어본다", next: "day1_choice_portfolio", effects: { binaWill: 1, fatigue: 5, flag: "creative_attachment" } },
+        { text: "게임을 한 판 더 한다", next: "day1_choice_game", effects: { binaWill: -1, fatigue: 10, flag: "avoidance" } },
+        { text: "그냥 컴퓨터를 끈다", next: "day1_choice_off", effects: { fatigue: -5 } }
+      ]
+    },
+    day1_choice_portfolio: {
+      speaker: "나레이션",
+      character: "bina",
+      text: "빛나는 포트폴리오 파일을 다시 열었다. 화면에는 자신이 만든 캐릭터 이미지와 UI 시안들이 떠 있었다. 처음 만들 때는 분명 좋았다. 하지만 지금은 완성되지 않은 페이지들이 자신이 멈춰 있다는 증거처럼 보였다.",
+      stage: "room",
+      next: "day1_choice_portfolio_line"
+    },
+    day1_choice_portfolio_line: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "못 만든 건 아닌데…… 그렇다고 뽑힐 정도도 아니고. 내가 이걸 좋아해서 하는 건지, 안 하면 안 될 것 같아서 붙잡고 있는 건지 모르겠어.",
+      stage: "room",
+      next: "day1_fridge"
+    },
+    day1_choice_game: {
+      speaker: "나레이션",
+      character: "bina",
+      text: "빛나는 다시 게임 시작 버튼을 눌렀다. 캐릭터는 움직였고, 적은 몰려왔다. 손가락은 익숙하게 움직였지만 집중은 되지 않았다. 3분 후, 화면에는 다시 붉은 글자가 떠올랐다.",
+      stage: "room",
+      next: "day1_choice_game_line"
+    },
+    day1_choice_game_line: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "아…… 그만해야 되는데.",
+      stage: "room",
+      next: "day1_fridge"
+    },
+    day1_choice_off: {
+      speaker: "나레이션",
+      character: "bina",
+      text: "빛나는 아무 말 없이 컴퓨터를 껐다. 방 안이 갑자기 어두워졌다. 모니터의 빛이 사라지자, 옥탑방은 더 작고 낡아 보였다.",
+      stage: "room",
+      next: "day1_choice_off_line"
+    },
+    day1_choice_off_line: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "조용하네.",
+      stage: "room",
+      next: "day1_fridge"
+    },
+    day1_fridge: {
+      speaker: "나레이션",
+      character: "bina",
+      text: "배에서 작은 소리가 났다. 빛나는 냉장고를 열었다. 안에는 유통기한이 지난 우유와 마른 깻잎 몇 장, 언제 샀는지 기억도 나지 않는 소스병뿐이었다.",
+      stage: "room",
+      next: "day1_fridge_line"
+    },
+    day1_fridge_line: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "와. 진수성찬. 담배나 피우자.",
+      stage: "room",
+      next: "day1_rooftop_door"
+    },
+    day1_rooftop_door: {
+      speaker: "나레이션",
+      character: "bina",
+      text: "빛나는 현관문 옆에 놓인 슬리퍼를 대충 신었다. 문손잡이는 차가웠다. 끼이이익. 옥탑방 문이 열리자, 방 안의 텁텁한 공기 대신 차가운 밤공기가 밀려 들어왔다.",
+      stage: "room",
+      next: "day1_rooftop"
+    },
+    day1_rooftop: {
+      speaker: "나레이션",
+      character: "bina",
+      text: "문 하나를 사이에 두고 세상이 달라졌다. 방 안은 좁고 답답했지만, 옥상은 이상할 정도로 넓게 느껴졌다.",
+      stage: "roof",
+      next: "day1_rooftop_detail"
+    },
+    day1_rooftop_detail: {
+      speaker: "나레이션",
+      character: "bina",
+      text: "낡은 난간. 녹슨 물탱크. 널어놓은 빨래줄. 바닥에 남은 오래된 빗자국. 빛나가 담배를 피우러 나올 때마다 보는 풍경이었다.",
+      stage: "roof",
+      next: "day1_star"
+    },
+    day1_star: {
+      speaker: "나레이션",
+      character: "bina",
+      text: "서울의 밤하늘은 언제나 흐릿했다. 그런데 오늘은 이상하게 별 하나가 보였다. 유난히 밝은 별.",
+      stage: "roof3",
+      actors: [],
+      next: "day1_star_line"
+    },
+    day1_star_line: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "서울에서도 별이 보이네. 나도 저렇게 빛날 수 있을까.",
+      stage: "roof3",
+      actors: [],
+      next: "day1_star_mock"
+    },
+    day1_star_mock: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "아니지. 이빛나가 빛나다니. 이름값 못 하는 것도 정도가 있지.",
+      stage: "roof3",
+      actors: [],
+      next: "day1_star_moves"
+    },
+    day1_star_moves: {
+      speaker: "나레이션",
+      text: "그때였다. 별이 움직였다. 처음에는 착각인 줄 알았다. 하지만 별은 분명히 커지고 있었다. 조금씩. 아니, 빠르게.",
+      stage: "roof4",
+      actors: ["bina", "starship"],
+      next: "day1_star_falls"
+    },
+    day1_star_falls: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "……뭐야?",
+      stage: "roof5",
+      actors: ["bina", "starship"],
+      next: "day1_falling_choice"
+    },
+    day1_falling_choice: {
+      speaker: "나레이션",
+      text: "별은 이제 별이 아니었다. 불타는 무언가가 하늘을 가르며 옥탑방 옥상 쪽으로 떨어지고 있었다.",
+      stage: "roof6",
+      actors: ["bina", "starship"],
+      choices: [
+        { text: "바로 방 안으로 도망친다", next: "day1_fall_run", effects: { binaWill: 1, fatigue: 10, flag: "survival_instinct" } },
+        { text: "몸이 굳어 움직이지 못한다", next: "day1_fall_freeze", effects: { binaWill: -1, fatigue: 15, badEndingFlag: 1, flag: "helplessness" } },
+        { text: "휴대폰을 꺼내 촬영한다", next: "day1_fall_record", effects: { fatigue: 15, phoneCracked: true, ufoVideoRecorded: true } }
+      ]
+    },
+    day1_fall_run: {
+      speaker: "나레이션",
+      text: "빛나는 본능적으로 몸을 돌렸다. 바로 뒤에는 옥탑방 문이 있었다. 하지만 손이 문고리에 닿기도 전에, 등 뒤의 빛은 이미 너무 가까워져 있었다.",
+      stage: "roof6",
+      actors: ["bina", "starship"],
+      next: "day1_crash"
+    },
+    day1_fall_freeze: {
+      speaker: "나레이션",
+      text: "도망쳐야 한다. 방문은 바로 뒤에 있었다. 그런데 몸이 움직이지 않았다. 어쩌면 아주 잠깐, 이대로 끝나도 괜찮지 않을까 하는 생각이 스쳤기 때문일지도 몰랐다.",
+      stage: "roof6",
+      actors: ["bina", "starship"],
+      next: "day1_crash"
+    },
+    day1_fall_record: {
+      speaker: "나레이션",
+      text: "빛나는 거의 반사적으로 휴대폰을 꺼냈다. 렌즈 안에서 별이 점점 커졌다. 다음 순간, 휴대폰은 손에서 튕겨 나갔다.",
+      stage: "roof6",
+      actors: ["bina", "starship"],
+      next: "day1_crash"
+    },
+    day1_crash: {
+      speaker: "나레이션",
+      text: "쾅! 엄청난 굉음과 함께 옥상 바닥이 흔들렸다. 빛나는 충격파에 밀려 바닥에 쓰러졌다.",
+      stage: "crash",
+      actors: ["bina", "starshipCrash"],
+      shake: true,
+      next: "day1_capsule"
+    },
+    day1_capsule: {
+      speaker: "나레이션",
+      text: "먼지가 자욱했다. 타는 냄새가 났다. 그런데 이상하게도 쇠 냄새와 함께 달콤한 향이 섞여 있었다. 옥상 한가운데, 은빛 구체가 박혀 있었다.",
+      stage: "crash",
+      actors: ["bina", "starshipCrash"],
+      next: "day1_capsule_line"
+    },
+    day1_capsule_line: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "……UFO?",
+      stage: "crash",
+      actors: ["bina", "starshipCrash"],
+      next: "day1_pyong_appears"
+    },
+    day1_pyong_appears: {
+      speaker: "나레이션",
+      text: "그 순간, 캡슐의 문이 열렸다. 치이이익. 하얀 연기 사이로 작은 실루엣이 나타났다.",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      next: "day1_pyong_test"
+    },
+    day1_pyong_test: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "아, 아. 수신 확인. 번역 모듈 작동 중. 여기는…… 어…… 바닥이네? 착륙 성공!",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      next: "day1_not_landing"
+    },
+    day1_not_landing: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "그건 착륙이 아니라 추락이야.",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      next: "day1_pyong_intro"
+    },
+    day1_pyong_intro: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "나는 M32-BN. 안드로메다 은하계 로열 하우스의 제17대 공주 후보이자, 차원 항해 자격 3급 보유자이자……",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      next: "day1_short"
+    },
+    day1_short: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "잠깐. 다시. 짧게.",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      next: "day1_alien"
+    },
+    day1_alien: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "외계인이야. 그냥 뿅뿅이라고 불러.",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      next: "day1_deny"
+    },
+    day1_deny: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "미쳤네.",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      next: "day1_signal"
+    },
+    day1_signal: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "그러니까 넌 외계인이고, 여기 추락했고, 지금 내 옥탑방 옥상에 우주선을 박아놨어. 왜 하필 여기야?",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      next: "day1_dying_star"
+    },
+    day1_dying_star: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "가장 가까운 생명 신호를 추적했어. 네 신호. 특이했어. 꺼져가는 별 같았어.",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      next: "day1_dying_reaction"
+    },
+    day1_dying_reaction: {
+      speaker: "나레이션",
+      text: "빛나의 표정이 굳었다. 꺼져가는 별. 그 말은 이상하게 가슴에 박혔다.",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      choices: [
+        { text: "나에 대해 뭘 안다고 그래?", next: "day1_react_defensive", effects: { pyongTrust: -1, flag: "defensive_reaction" } },
+        { text: "……그렇게 보여?", next: "day1_react_accept", effects: { binaWill: 1, pyongTrust: 1, flag: "accepts_dying_star_metaphor" } },
+        { text: "웃기지 마. 난 그냥 백수야.", next: "day1_react_self", effects: { binaWill: 1, flag: "self_deprecation_shared" } }
+      ]
+    },
+    day1_react_defensive: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "나에 대해 뭘 안다고 그래?",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      next: "day1_react_defensive_pyong"
+    },
+    day1_react_defensive_pyong: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "몰라. 모르니까 본 대로 말했어.",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      next: "day1_help"
+    },
+    day1_react_accept: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "……그렇게 보여?",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      next: "day1_react_accept_pyong"
+    },
+    day1_react_accept_pyong: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "응. 그런데 완전히 꺼진 별은 아니야. 완전히 꺼진 별은 신호도 못 보내.",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      next: "day1_help"
+    },
+    day1_react_self: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "웃기지 마. 난 그냥 백수야. 일 안 하고, 돈 없고, 미래도 애매한 사람.",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      next: "day1_react_self_pyong"
+    },
+    day1_react_self_pyong: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "그럼 시간이 많다는 뜻이야? 시간 많은 건 귀한 거야.",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      next: "day1_help"
+    },
+    day1_help: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "빛나. 나 도와줘. 우주선이 망가졌어. 수리해야 해.",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      next: "day1_help_bina"
+    },
+    day1_help_bina: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "나는 내 인생도 못 고치는데, 우주선을 어떻게 고쳐.",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      next: "day1_together"
+    },
+    day1_together: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "괜찮아. 나도 내 인생 잘 몰라. 같이 하면 되지 않을까?",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      choices: [
+        { text: "손을 잡는다", next: "day1_hand_hold", effects: { binaWill: 1, pyongTrust: 2, routeFlag: "stable_cohabitation" } },
+        { text: "일단 거리를 둔다", next: "day1_hand_distance", effects: { pyongTrust: 1, routeFlag: "cautious_cohabitation" } },
+        { text: "신고하겠다고 말한다", next: "day1_hand_report", effects: { pyongTrust: -2, badEndingFlag: 1, routeFlag: "distrust_route" } },
+        { text: "모른 척하고 방으로 들어간다", next: "day1_hand_leave", effects: { binaWill: -2, pyongTrust: -1, fatigue: 10, badEndingFlag: 1, routeFlag: "forced_reunion" } }
+      ]
+    },
+    day1_hand_hold: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "……일단 들어가자. 아직 도와준다는 건 아니야.",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      next: "day1_enter_room"
+    },
+    day1_hand_distance: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "잠깐. 너무 가까이 오지 마. 일단…… 들어와. 대신 이상한 짓 하지 마.",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      next: "day1_enter_room"
+    },
+    day1_hand_report: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "이건 신고해야 돼. 경찰이든, 소방서든, 아무튼.",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      next: "day1_report_pyong"
+    },
+    day1_report_pyong: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "그러면 나는 잡혀가? 그럼 싫어.",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      next: "day1_enter_room"
+    },
+    day1_hand_leave: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "난 못 해. 나한테 그런 거 맡기지 마.",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      next: "day1_leave_pyong"
+    },
+    day1_leave_pyong: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "그래도 네 신호는 아직 꺼지지 않았어.",
+      stage: "alien",
+      actors: ["bina", "starshipOpen", "pyong"],
+      next: "day1_enter_room"
+    },
+    day1_enter_room: {
+      speaker: "나레이션",
+      text: "옥탑방 문이 괴상한 소리를 내며 열렸다. 빛나는 먼저 방 안으로 들어갔다. 뿅뿅은 문턱 앞에서 잠깐 멈춰 섰다.",
+      stage: "room",
+      actors: ["bina", "pyong"],
+      next: "day1_room_with_pyong"
+    },
+    day1_room_with_pyong: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "와. 여기가 네 거주 공간이야?",
+      stage: "room",
+      actors: ["bina", "pyong"],
+      next: "day1_rooftop_room"
+    },
+    day1_rooftop_room: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "응. 옥탑방. 건물 맨 위에 있는 방. 싸고, 덥고, 춥고, 바람 많이 들고.",
+      stage: "room",
+      actors: ["bina", "pyong"],
+      next: "day1_near_sky"
+    },
+    day1_near_sky: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "하늘이 가까운 방이네.",
+      stage: "room",
+      actors: ["bina", "pyong"],
+      next: "day1_end_record"
+    },
+    day1_end_record: {
+      speaker: "나레이션",
+      text: "문이 닫혔다. 옥상에는 아직도 연기가 피어오르고 있었다. 그리고 이빛나는 아직 몰랐다. 하늘이 가까운 이 방에서, 자신의 한 달이 완전히 바뀌게 될 거라는 걸.",
+      stage: "room",
+      actors: ["bina", "pyong"],
+      next: "day1_system_record"
+    },
+    day1_system_record: {
+      speaker: "나레이션",
+      text: "1일차가 종료되었습니다. 이빛나는 옥탑방 옥상에서 정체불명의 캡슐을 발견했고, 자칭 뿅뿅과 만났다. 뿅뿅은 이빛나를 꺼져가는 별이라고 표현했고, 우주선 수리를 도와달라고 요청했다.",
+      stage: "room",
+      actors: ["bina", "pyong"],
+      next: "schedule_start"
+    },
     prologue_title: {
       speaker: "프롤로그",
       character: "bina",
@@ -1117,6 +1607,7 @@ const story = {
       speaker: "나레이션",
       text: "뿅뿅은 신나서 창가로 달려갔다. 그리고 가로등 빛을 받으며 만족스러운 표정을 지었다.",
       stage: "room",
+      actors: ["bina", "pyong"],
       next: "chapter1_lie_down"
     },
     chapter1_lie_down: {
@@ -1921,8 +2412,15 @@ const story = {
       text: "빛나는 화면을 다시 올렸다. 포트폴리오. 한 달째 멈춰 있던 파일. 오늘은... 조금만 해볼까. 그 생각이 문득 들었다. 오랜만에.",
       stage: "room",
       choices: [
+        { text: "2일차 시작", next: "schedule_start" },
         { text: "처음부터 다시", next: "prologue_title" }
       ]
+    },
+    schedule_start: {
+      speaker: "시스템",
+      text: "2일차부터는 30일 동안 아침, 점심, 밤마다 행동을 하나씩 선택한다.",
+      stage: "room",
+      mode: "schedule"
     }
   }
 };

@@ -14,13 +14,16 @@ const hud = document.querySelector(".hud");
 const portraitFrame = document.querySelector("#portraitFrame");
 const portrait = document.querySelector("#portrait");
 const stageActors = document.querySelector("#stageActors");
+const dialogueActors = document.querySelector("#dialogueActors");
 const stageCharacter = document.querySelector("#stageCharacter");
 const stageCharacterSheet = document.querySelector("#stageCharacterSheet");
 const overheadPrompt = document.querySelector("#overheadPrompt");
 const narrationPanel = document.querySelector("#narrationPanel");
 const narrationText = document.querySelector("#narrationText");
 const narrationChoices = document.querySelector("#narrationChoices");
+const narrationPrompt = document.querySelector(".narration-prompt");
 const debugPanel = document.querySelector("#debugPanel");
+const debugPanelTab = document.querySelector("#debugPanelTab");
 const debugOutput = document.querySelector("#debugOutput");
 const copyTuning = document.querySelector("#copyTuning");
 const debugCharacter = document.querySelector("#debugCharacter");
@@ -53,6 +56,19 @@ const saveModalClose = document.querySelector("#saveModalClose");
 const saveSlots = document.querySelector("#saveSlots");
 const savePages = document.querySelector("#savePages");
 const autoModeButton = document.querySelector("#autoModeButton");
+const schedulePanel = document.querySelector("#schedulePanel");
+const scheduleTitle = document.querySelector("#scheduleTitle");
+const scheduleSubtitle = document.querySelector("#scheduleSubtitle");
+const scheduleStats = document.querySelector("#scheduleStats");
+const scheduleBody = document.querySelector("#scheduleBody");
+const scheduleLog = document.querySelector("#scheduleLog");
+const scheduleClose = document.querySelector("#scheduleClose");
+const scheduleMiniHud = document.querySelector("#scheduleMiniHud");
+const miniDay = document.querySelector("#miniDay");
+const miniTimeSlot = document.querySelector("#miniTimeSlot");
+const miniMoney = document.querySelector("#miniMoney");
+const miniFatigue = document.querySelector("#miniFatigue");
+const scheduleStatusButton = document.querySelector("#scheduleStatusButton");
 
 let currentSceneId = story.start;
 const sceneHistory = [];
@@ -75,6 +91,9 @@ let currentCharacterId = null;
 let currentStageActorIds = [];
 let currentStageName = "room";
 let isUiHidden = false;
+let isScheduleMode = false;
+let gameState = cloneScheduleState();
+let currentScheduleLocationId = "room";
 const heldKeys = new Set();
 const keyPressOrder = new Map();
 let keyPressCounter = 0;
@@ -90,6 +109,41 @@ const quickSaveKey = "dankanbang-orion-quick-save";
 
 function applyUiVisibility() {
   document.body.classList.toggle("ui-hidden-mode", isUiHidden);
+}
+
+function clonePlainObject(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function cloneScheduleState() {
+  return clonePlainObject(scheduleData.initialState);
+}
+
+function normalizeScheduleState(state) {
+  return {
+    ...cloneScheduleState(),
+    ...clonePlainObject(state ?? {}),
+    parts: {
+      ...scheduleData.initialState.parts,
+      ...(state?.parts ?? {})
+    },
+    exploration: {
+      ...scheduleData.initialState.exploration,
+      ...(state?.exploration ?? {})
+    },
+    purchasedParts: {
+      ...scheduleData.initialState.purchasedParts,
+      ...(state?.purchasedParts ?? {})
+    },
+    flags: {
+      ...scheduleData.initialState.flags,
+      ...(state?.flags ?? {})
+    }
+  };
+}
+
+function timeSlotLabel(timeSlot = gameState.timeSlot) {
+  return scheduleData.timeSlots.find((slot) => slot.id === timeSlot)?.label ?? timeSlot;
 }
 
 function clearAutoAdvance() {
@@ -111,6 +165,7 @@ const characters = {
   bina: {
     portrait: "./assets/images/characters/bina-portrait.png",
     sprite: "./assets/images/characters/bina-sprite.png",
+    dialogueSprite: "./assets/images/characters/bina-portrait.png",
     walk: {
       sideSheet: "./assets/images/characters/bina-walk-side-1.png",
       upSheet: "./assets/images/characters/bina-walk-up-1.png",
@@ -119,11 +174,13 @@ const characters = {
   },
   pyong: {
     portrait: "./assets/images/characters/pyong-portrait.png",
-    sprite: "./assets/images/characters/pyong-sprite.png"
+    sprite: "./assets/images/characters/pyong-sprite.png",
+    dialogueSprite: "./assets/images/characters/pyong-portrait.png"
   },
   cheolsu: {
-    portrait: "./assets/images/characters/cheolsu-portrait.png",
-    sprite: "./assets/images/characters/cheolsu-sprite.png"
+    portrait: "./assets/images/characters/kim-portrait.png",
+    sprite: "./assets/images/characters/kim-portrait.png",
+    dialogueSprite: "./assets/images/characters/kim-portrait.png"
   },
   starship: {
     sprite: "./assets/images/starship-1.png"
@@ -179,6 +236,9 @@ const scenePrefixImageDefaults = {
 
 const sceneBackgrounds = {
   room: "./assets/images/scene-room.png",
+  roomMorning: "./assets/images/scene-room-0.png",
+  roomAfternoon: "./assets/images/scene-room-00.png",
+  roomEvening: "./assets/images/scene-room-000.png",
   room2: "./assets/images/scene-room-2.png",
   room3: "./assets/images/scene-room-3.png",
   room4: "./assets/images/scene-room-4.png",
@@ -191,12 +251,53 @@ const sceneBackgrounds = {
   roof4: "./assets/images/scene-roof4.png",
   roof5: "./assets/images/scene-roof5.png",
   roof6: "./assets/images/scene-roof6.png",
+  aptMorning: "./assets/images/scene-apt-1.png",
+  aptAfternoon: "./assets/images/scene-apt-2.png",
+  aptNight: "./assets/images/scene-apt-3.png",
+  withU: "./assets/images/scene-withU.png",
+  sanMorning: "./assets/images/scene-san-1.png",
+  sanAfternoon: "./assets/images/scene-san-3.png",
+  sanNight: "./assets/images/scene-san-2.png",
   crash: "./assets/images/scene-roof2.png",
   alien: "./assets/images/scene-roof2.png"
 };
 
+const dialogueCharacterIds = ["bina", "pyong", "cheolsu"];
+const dialogueActorPositions = {
+  bina: {
+    activeX: 71,
+    inactiveX: 72,
+    y: 70,
+    size: 24.7,
+    focusScale: 2,
+    mutedScale: 1.66,
+    flipX: false
+  },
+  pyong: {
+    activeX: 28,
+    inactiveX: 29.5,
+    y: 70,
+    size: 22.8,
+    focusScale: 2,
+    mutedScale: 1.62,
+    flipX: true
+  },
+  cheolsu: {
+    activeX: 75,
+    inactiveX: 85,
+    y: 70,
+    size: 23.75,
+    focusScale: 1.08,
+    mutedScale: 0.95,
+    flipX: false
+  }
+};
+
 const stageCameraDefaults = {
   room: { x: 0, y: 0, zoom: 1, duration: 650 },
+  roomMorning: { x: 0, y: 0, zoom: 1, duration: 650 },
+  roomAfternoon: { x: 0, y: 0, zoom: 1, duration: 650 },
+  roomEvening: { x: 0, y: 0, zoom: 1, duration: 650 },
   room2: { x: 0, y: 0, zoom: 1, duration: 650 },
   room3: { x: 0, y: 0, zoom: 1, duration: 650 },
   room4: { x: 0, y: 0, zoom: 1, duration: 650 },
@@ -209,6 +310,13 @@ const stageCameraDefaults = {
   roof4: { x: 0, y: -12, zoom: 1, duration: 650 },
   roof5: { x: 0, y: -12, zoom: 1, duration: 650 },
   roof6: { x: 0, y: -12, zoom: 1, duration: 650 },
+  aptMorning: { x: 0, y: 0, zoom: 1, duration: 650 },
+  aptAfternoon: { x: 0, y: 0, zoom: 1, duration: 650 },
+  aptNight: { x: 0, y: 0, zoom: 1, duration: 650 },
+  withU: { x: 0, y: 0, zoom: 1, duration: 650 },
+  sanMorning: { x: 0, y: 0, zoom: 1, duration: 650 },
+  sanAfternoon: { x: 0, y: 0, zoom: 1, duration: 650 },
+  sanNight: { x: 0, y: 0, zoom: 1, duration: 650 },
   crash: { x: 0, y: -12, zoom: 1, duration: 650 },
   alien: { x: 0, y: -12, zoom: 1, duration: 650 }
 };
@@ -222,9 +330,12 @@ const tuning = {
   portraitX: 48,
   portraitY: 23,
   portraitZoom: 170,
-  dialogueOpacity: 0,
-  dialogueWidth: 83,
+  dialogueOpacity: 1,
+  dialogueWidth: 100,
   dialogueHeight: 0,
+  dialoguePadding: 16,
+  dialogueX: 50,
+  dialogueY: 4,
   advancePromptX: 96,
   advancePromptY: 84,
   advancePromptSize: 7.7
@@ -493,6 +604,28 @@ const stageCharacterTunings = {
 };
 
 const sceneCharacterTunings = {
+  chapter1_fun: {
+    pyong: {
+      stageX: 49,
+      stageY: 37.9,
+      stageSize: 13.5,
+      stageScaleX: 95,
+      stageScaleY: 103,
+      portraitX: 50,
+      portraitY: 11,
+      portraitZoom: 170
+    },
+    bina: {
+      stageX: 39,
+      stageY: 53.5,
+      stageSize: 15.3,
+      stageScaleX: 100,
+      stageScaleY: 100,
+      portraitX: 48,
+      portraitY: 23,
+      portraitZoom: 170
+    }
+  },
   star_grows: {
     starship: {
       stageX: 32,
@@ -711,12 +844,22 @@ const stageWalkTunings = {
   room3: { ...walkTuning },
   room4: { ...walkTuning },
   room5: { ...walkTuning },
+  roomMorning: { ...walkTuning },
+  roomAfternoon: { ...walkTuning },
+  roomEvening: { ...walkTuning },
   roof: { ...walkTuning },
   roof2: { ...walkTuning },
   roof3: { ...walkTuning },
   roof4: { ...walkTuning },
   roof5: { ...walkTuning },
   roof6: { ...walkTuning },
+  aptMorning: { ...walkTuning },
+  aptAfternoon: { ...walkTuning },
+  aptNight: { ...walkTuning },
+  withU: { ...walkTuning },
+  sanMorning: { ...walkTuning },
+  sanAfternoon: { ...walkTuning },
+  sanNight: { ...walkTuning },
   crash: { ...walkTuning },
   alien: { ...walkTuning }
 };
@@ -809,7 +952,7 @@ function setImage(image, src, visibleClass, onLoad, onError) {
 
 function getCharacterTuning(characterId) {
   const scenePrefix = Object.keys(scenePrefixCharacterTunings).find((prefix) => currentSceneId.startsWith(prefix));
-  return sceneCharacterTunings[currentSceneId]?.[characterId] ?? scenePrefixCharacterTunings[scenePrefix]?.[characterId] ?? stageCharacterTunings[currentStageName]?.[characterId] ?? characterTunings[characterId] ?? characterTunings.bina;
+  return sceneCharacterTunings[currentSceneId]?.[characterId] ?? progressionCharacterTuning(characterId) ?? scenePrefixCharacterTunings[scenePrefix]?.[characterId] ?? stageCharacterTunings[currentStageName]?.[characterId] ?? characterTunings[characterId] ?? characterTunings.bina;
 }
 
 function editableStageName() {
@@ -858,6 +1001,50 @@ function characterImagesFor(characterId, stageName = currentStageName, sceneId =
   };
 }
 
+function sceneOrderIndex(sceneId = currentSceneId) {
+  return Object.keys(story.scenes).indexOf(sceneId);
+}
+
+function isAtOrAfterScene(sceneId) {
+  const currentIndex = sceneOrderIndex();
+  const targetIndex = sceneOrderIndex(sceneId);
+  return currentIndex >= 0 && targetIndex >= 0 && currentIndex >= targetIndex;
+}
+
+function progressionCharacterTuning(characterId) {
+  if (!currentSceneId.startsWith("chapter1_")) {
+    return null;
+  }
+
+  if (characterId === "bina" && isAtOrAfterScene("chapter1_keyboard_laugh")) {
+    return {
+      stageX: 69,
+      stageY: 66.8,
+      stageSize: 15.3,
+      stageScaleX: 100,
+      stageScaleY: 100,
+      portraitX: 48,
+      portraitY: 23,
+      portraitZoom: 170
+    };
+  }
+
+  if (characterId === "pyong" && isAtOrAfterScene("chapter1_fun")) {
+    return {
+      stageX: 49,
+      stageY: 37.9,
+      stageSize: 13.5,
+      stageScaleX: 95,
+      stageScaleY: 103,
+      portraitX: 50,
+      portraitY: 11,
+      portraitZoom: 170
+    };
+  }
+
+  return null;
+}
+
 function editableSceneImages(characterId, sceneId = currentSceneId) {
   sceneImageTunings[sceneId] ??= {};
   sceneImageTunings[sceneId][characterId] ??= {};
@@ -888,7 +1075,35 @@ function isChapter1CupRamenVisible() {
   }
 
   const sceneOrder = Object.keys(story.scenes);
-  return sceneOrder.indexOf(currentSceneId) >= sceneOrder.indexOf("chapter1_ramen_bag");
+  const currentIndex = sceneOrder.indexOf(currentSceneId);
+  return (
+    currentIndex >= sceneOrder.indexOf("chapter1_ramen_bag") &&
+    currentIndex < sceneOrder.indexOf("chapter1_keyboard_laugh")
+  );
+}
+
+function actorEntranceAnimation(actorId) {
+  if (currentSceneId !== "chapter1_fun" || actorId !== "pyong") {
+    return null;
+  }
+
+  return {
+    fromX: 58,
+    fromY: 54.3,
+    duration: 1500
+  };
+}
+
+function shouldFlipStageActor(actorId) {
+  if (actorId === "pyong" && currentStageName === "alien") {
+    return true;
+  }
+
+  if (actorId === "bina" && currentSceneId.startsWith("chapter1_")) {
+    return isAtOrAfterScene("chapter1_keyboard_laugh");
+  }
+
+  return false;
 }
 
 function actorIdsForScene(scene) {
@@ -930,9 +1145,7 @@ function renderStageActors(actorIds = []) {
     const actor = document.createElement("img");
     const scaleX = values.stageScaleX / 100;
     const scaleY = values.stageScaleY / 100;
-    const shouldFlip =
-      (actorId === "pyong" && currentStageName === "alien") ||
-      (actorId === "bina" && currentSceneId.startsWith("chapter1_"));
+    const shouldFlip = shouldFlipStageActor(actorId);
     const directionX = shouldFlip ? -1 : 1;
 
     actor.className = "stage-actor";
@@ -944,6 +1157,34 @@ function renderStageActors(actorIds = []) {
     actor.style.width = `${values.stageSize}%`;
     actor.style.transform = `translate(-50%, -50%) scale(${scaleX * directionX}, ${scaleY})`;
     stageActors.append(actor);
+
+    const entrance = actorEntranceAnimation(actorId);
+    if (entrance) {
+      actor.animate(
+        [
+          {
+            left: `${entrance.fromX}%`,
+            top: `${entrance.fromY}%`,
+            transform: `translate(-50%, -50%) scale(${scaleX * directionX}, ${scaleY})`
+          },
+          {
+            left: `${(entrance.fromX + values.stageX) / 2}%`,
+            top: `${Math.min(entrance.fromY, values.stageY) - 7}%`,
+            transform: `translate(-50%, -50%) scale(${scaleX * directionX}, ${scaleY})`
+          },
+          {
+            left: `${values.stageX}%`,
+            top: `${values.stageY}%`,
+            transform: `translate(-50%, -50%) scale(${scaleX * directionX}, ${scaleY})`
+          }
+        ],
+        {
+          duration: entrance.duration,
+          easing: "cubic-bezier(0.22, 0.9, 0.24, 1)",
+          fill: "both"
+        }
+      );
+    }
   });
 }
 
@@ -963,6 +1204,7 @@ function renderCharacter(characterId, options = {}) {
   const character = characterImagesFor(characterId);
   const hasCharacter = Boolean(character);
   const renderStageSprite = options.renderStageSprite ?? true;
+  const renderPortrait = options.renderPortrait ?? false;
 
   if (!characterId) {
     return;
@@ -975,21 +1217,27 @@ function renderCharacter(characterId, options = {}) {
 
   stageCharacter.style.transform = "";
   stageCharacterSheet.classList.remove("stage-character-sheet-visible");
-  hud.classList.toggle("hud-no-portrait", !hasCharacter);
+  hud.classList.toggle("hud-no-portrait", true);
   portraitFrame.classList.add("portrait-frame-hidden");
-  setImage(
-    portrait,
-    character?.portrait,
-    "portrait-visible",
-    () => {
-      portraitFrame.classList.remove("portrait-frame-hidden");
-      hud.classList.remove("hud-no-portrait");
-    },
-    () => {
-      portraitFrame.classList.add("portrait-frame-hidden");
-      hud.classList.add("hud-no-portrait");
-    }
-  );
+  portrait.classList.remove("portrait-visible");
+  portrait.hidden = true;
+  portrait.removeAttribute("src");
+
+  if (renderPortrait) {
+    setImage(
+      portrait,
+      character?.portrait,
+      "portrait-visible",
+      () => {
+        portraitFrame.classList.remove("portrait-frame-hidden");
+        hud.classList.remove("hud-no-portrait");
+      },
+      () => {
+        portraitFrame.classList.add("portrait-frame-hidden");
+        hud.classList.add("hud-no-portrait");
+      }
+    );
+  }
 
   if (renderStageSprite) {
     setImage(stageCharacter, character?.sprite, "stage-character-visible");
@@ -1064,6 +1312,112 @@ function hideNarrationPanel() {
   narrationPanel.classList.add("narration-panel-hidden");
   narrationText.textContent = "";
   narrationChoices.replaceChildren();
+  narrationPrompt?.classList.add("narration-prompt-hidden");
+  hideDialogueMode();
+}
+
+function speakerCharacterId(value) {
+  const normalized = String(value ?? "").toLowerCase();
+  const map = {
+    bina: "bina",
+    "이빛나": "bina",
+    pyong: "pyong",
+    "뿅뿅": "pyong",
+    kim: "cheolsu",
+    cheolsu: "cheolsu",
+    "김철수": "cheolsu"
+  };
+  return map[normalized] ?? null;
+}
+
+function speakerDisplayName(value) {
+  const normalized = String(value ?? "").toLowerCase();
+  const map = {
+    bina: "이빛나",
+    pyong: "뿅뿅",
+    kim: "김철수",
+    cheolsu: "김철수",
+    narration: "나레이션"
+  };
+  return map[normalized] ?? value;
+}
+
+function isNarrationScene(scene) {
+  return scene.type === "narration" || ["나레이션", "프롤로그", "1장", "narration"].includes(scene.speaker);
+}
+
+function dialogueCharactersForScene(scene, isNarration) {
+  if (!shouldShowDialogueStanding(scene) || isNarration || scene.hideDialogueActors) {
+    return [];
+  }
+
+  if (Array.isArray(scene.visibleCharacters)) {
+    return scene.visibleCharacters.filter((id) => dialogueCharacterIds.includes(id));
+  }
+
+  return actorIdsForScene(scene).filter((id) => dialogueCharacterIds.includes(id));
+}
+
+function shouldShowDialogueStanding(scene) {
+  if (isNarrationScene(scene) || scene.hideDialogueActors) {
+    return false;
+  }
+
+  if (Array.isArray(scene.visibleCharacters)) {
+    return scene.type === "dialogue" && scene.visibleCharacters.length >= 2;
+  }
+
+  return actorIdsForScene(scene).filter((id) => dialogueCharacterIds.includes(id)).length >= 2;
+}
+
+function focusCharacterForScene(scene, isNarration) {
+  if (isNarration) {
+    return null;
+  }
+  return scene.focusCharacter ?? speakerCharacterId(scene.speaker) ?? scene.character ?? null;
+}
+
+function renderDialogueActors(scene, isNarration) {
+  const visibleCharacters = dialogueCharactersForScene(scene, isNarration);
+  const focusCharacter = focusCharacterForScene(scene, isNarration);
+
+  dialogueActors.replaceChildren();
+  dialogueActors.classList.toggle("dialogue-actors-hidden", visibleCharacters.length === 0);
+  stage.classList.toggle("stage-dialogue-mode", visibleCharacters.length > 0);
+  stage.classList.toggle("stage-dialogue-standing-mode", visibleCharacters.length > 0);
+
+  visibleCharacters.forEach((characterId) => {
+    const character = characterImagesFor(characterId);
+    const position = dialogueActorPositions[characterId];
+    if (!character?.dialogueSprite || !position) {
+      return;
+    }
+
+    const isFocused = focusCharacter === characterId;
+    const actor = document.createElement("img");
+    actor.className = [
+      "dialogue-actor",
+      `dialogue-actor-${characterId}`,
+      isFocused ? "dialogue-actor-focused" : "dialogue-actor-muted",
+      isNarration ? "dialogue-actor-narration" : ""
+    ].filter(Boolean).join(" ");
+    actor.src = character.dialogueSprite;
+    actor.alt = "";
+    actor.setAttribute("aria-hidden", "true");
+    actor.style.left = `${isFocused ? position.activeX : position.inactiveX}%`;
+    actor.style.top = `${position.y}%`;
+    actor.style.width = `${position.size}%`;
+    actor.style.setProperty("--dialogue-actor-scale", isFocused ? position.focusScale : position.mutedScale);
+    actor.style.setProperty("--dialogue-actor-flip", position.flipX ? -1 : 1);
+    dialogueActors.append(actor);
+  });
+}
+
+function hideDialogueMode() {
+  dialogueActors.replaceChildren();
+  dialogueActors.classList.add("dialogue-actors-hidden");
+  stage.classList.remove("stage-dialogue-mode");
+  stage.classList.remove("stage-dialogue-standing-mode");
 }
 
 function showSceneChoices(sceneChoices, isCenteredText) {
@@ -1073,13 +1427,51 @@ function showSceneChoices(sceneChoices, isCenteredText) {
     button.className = "choice";
     button.type = "button";
     button.textContent = choice.text;
-    button.addEventListener("click", () => renderScene(choice.next));
+    button.addEventListener("click", () => {
+      applyStoryEffects(choice.effects);
+      renderScene(choice.next);
+    });
     choiceContainer.append(button);
+  });
+}
+
+function applyStoryEffects(effects = {}) {
+  Object.entries(effects).forEach(([key, value]) => {
+    if (key === "flag") {
+      gameState.flags[value] = true;
+      return;
+    }
+
+    if (key === "flags") {
+      value.forEach((flag) => {
+        gameState.flags[flag] = true;
+      });
+      return;
+    }
+
+    if (key === "routeFlag") {
+      gameState.routeFlag = value;
+      return;
+    }
+
+    if (key in gameState && typeof gameState[key] === "number") {
+      const nextValue = gameState[key] + value;
+      gameState[key] = ["money", "fatigue", "communicationProgress", "spaceshipProgress", "badEndingFlag"].includes(key)
+        ? Math.max(0, nextValue)
+        : nextValue;
+      return;
+    }
+
+    gameState.flags[key] = value;
   });
 }
 
 function revealSceneControls(sceneChoices, scene, isCenteredText) {
   showSceneChoices(sceneChoices, isCenteredText);
+  narrationPrompt?.classList.toggle(
+    "narration-prompt-hidden",
+    !isCenteredText || sceneChoices.length > 0 || !scene.next
+  );
   advancePrompt.classList.toggle(
     "advance-prompt-hidden",
     isCenteredText || sceneChoices.length > 0 || !scene.next
@@ -1100,10 +1492,471 @@ function scheduleAutoAdvance(sceneChoices, scene) {
   }, autoAdvanceDelay);
 }
 
+function scheduleStatItems() {
+  return [
+    ["일차", `${gameState.day}일차 ${timeSlotLabel()}`],
+    ["돈", `${gameState.money.toLocaleString("ko-KR")}원`],
+    ["피로도", gameState.fatigue],
+    ["이빛나 의지", gameState.binaWill],
+    ["뿅뿅 신뢰도", gameState.pyongTrust],
+    ["김철수 신뢰도", gameState.kimTrust],
+    ["교신장치", `${gameState.communicationProgress}%`],
+    ["우주선", `${gameState.spaceshipProgress}%`],
+    ["배드 플래그", gameState.badEndingFlag],
+    ["특수 부품", specialPartsLabel()],
+    ["일반 부품", generalPartsLabel()]
+  ];
+}
+
+function specialPartsLabel() {
+  const labels = [];
+  if (gameState.parts.starlightMetal) labels.push("별빛 금속");
+  if (gameState.parts.galaxyJellyFilm) labels.push("반사 필름");
+  if (gameState.parts.luminousStarflower) labels.push("야광별꽃");
+  return labels.length ? labels.join(", ") : "없음";
+}
+
+function generalPartsLabel() {
+  const parts = gameState.purchasedParts;
+  const total = parts.electronics + parts.cable + parts.battery + parts.tools;
+  return total > 0 ? `${total}개` : "없음";
+}
+
+function renderScheduleStats() {
+  scheduleStats.replaceChildren();
+  scheduleStatItems().forEach(([label, value]) => {
+    const item = document.createElement("div");
+    item.className = "schedule-stat";
+    item.innerHTML = `<span>${label}</span><strong>${value}</strong>`;
+    scheduleStats.append(item);
+  });
+}
+
+function refreshScheduleMiniHud() {
+  miniDay.textContent = `${gameState.day}일차`;
+  miniTimeSlot.textContent = timeSlotLabel();
+  miniMoney.textContent = `${gameState.money.toLocaleString("ko-KR")}원`;
+  miniFatigue.textContent = `피로 ${gameState.fatigue}`;
+}
+
+function setScheduleLog(message = "") {
+  scheduleLog.textContent = message;
+}
+
+function setScheduleButtons(buttons) {
+  scheduleBody.replaceChildren();
+  buttons.forEach((item) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = item.text;
+    button.disabled = Boolean(item.disabled);
+    button.addEventListener("click", item.onClick);
+    scheduleBody.append(button);
+  });
+}
+
+function refreshSchedulePanel(subtitle, logMessage = "") {
+  scheduleTitle.textContent = `${gameState.day}일차 ${timeSlotLabel()}`;
+  scheduleSubtitle.textContent = subtitle;
+  renderScheduleStats();
+  setScheduleLog(logMessage);
+  refreshScheduleMiniHud();
+}
+
+function scheduleLocation(locationId = currentScheduleLocationId) {
+  return scheduleData.locations[locationId] ?? scheduleData.locations.room;
+}
+
+function scheduleWalkScene(locationId) {
+  const location = scheduleLocation(locationId);
+  const stageName = location.stagesByTime?.[gameState.timeSlot] ?? location.stage;
+  return {
+    character: "bina",
+    stage: stageName,
+    startX: location.startX,
+    startY: location.startY,
+    interactions: location.interactions.map((interaction) => ({
+      ...interaction,
+      text: interaction.prompt
+    })),
+    actors: location.actors ?? [],
+    scheduleLocationId: locationId
+  };
+}
+
+function startScheduleMode(logMessage = "2일차부터는 방에서 하루를 시작한다.") {
+  if (gameState.day < 2) {
+    gameState.day = 2;
+    gameState.timeSlot = "morning";
+    currentScheduleLocationId = "room";
+  }
+  startScheduleFieldMode(currentScheduleLocationId, scheduleOpeningMessage(logMessage));
+}
+
+function scheduleOpeningMessage(baseMessage) {
+  const routeMessages = {
+    stable_cohabitation: "뿅뿅은 어색하지만 자연스럽게 옥탑방 안에서 아침을 맞았다.",
+    cautious_cohabitation: "빛나는 뿅뿅을 아직 경계하고 있다. 뿅뿅은 방 안 물건을 만지려다 자주 제지당한다.",
+    distrust_route: "뿅뿅은 빛나를 경계한다. 초반에는 옥상 쪽에 머무르려 하고, 신뢰를 회복할 계기가 필요하다.",
+    forced_reunion: "아침이 되자 뿅뿅은 옥탑방 문 앞에 쓰러지듯 기대 있었다. 결국 다시 마주칠 수밖에 없었다."
+  };
+  return [baseMessage, routeMessages[gameState.routeFlag]].filter(Boolean).join("\n\n");
+}
+
+function startScheduleFieldMode(locationId = currentScheduleLocationId, logMessage = "") {
+  isScheduleMode = true;
+  currentScheduleLocationId = gameState.timeSlot === "night" ? "room" : locationId;
+  stopWalkMode();
+  clearTyping();
+  clearAutoAdvance();
+  hideNarrationPanel();
+  hud.classList.add("hud-hidden");
+  schedulePanel.classList.add("schedule-panel-hidden");
+  scheduleMiniHud.classList.remove("schedule-mini-hud-hidden");
+  refreshScheduleMiniHud();
+  startWalkMode(scheduleWalkScene(currentScheduleLocationId));
+  if (logMessage) {
+    setScheduleLog(logMessage);
+  }
+}
+
+function renderScheduleActionChoices(logMessage = "이번 시간대에 할 행동을 고른다.") {
+  refreshSchedulePanel("이번 시간대에 할 행동을 선택한다.", logMessage);
+  setScheduleButtons([
+    { text: "미니게임", onClick: renderMinigameChoices },
+    { text: "알바", onClick: renderPartTimeResultChoices },
+    { text: "탐색", onClick: renderExploreChoices },
+    { text: "휴식", onClick: renderRestResultChoices }
+  ]);
+}
+
+function renderMinigameChoices() {
+  const available = scheduleData.minigames.filter((minigame) => gameState.day >= minigame.unlockDay);
+  refreshSchedulePanel("어떤 미니게임을 할지 선택한다.", "현재는 임시 판정 버튼으로 결과를 고른다.");
+  setScheduleButtons([
+    ...available.map((minigame) => ({
+      text: minigame.label,
+      onClick: () => renderGradeChoices(minigame.label, (grade) => applyMinigameResult(minigame, grade))
+    })),
+    { text: "돌아가기", onClick: () => renderScheduleActionChoices("행동 선택으로 돌아왔다.") }
+  ]);
+}
+
+function renderPartTimeResultChoices() {
+  renderGradeChoices("편의점 바코드 알바", applyPartTimeResult);
+}
+
+function renderRestResultChoices() {
+  renderGradeChoices("휴식", applyRestResult);
+}
+
+function renderExploreChoices() {
+  const sites = Object.entries(scheduleData.exploreSites);
+  refreshSchedulePanel("탐색할 장소를 선택한다.", "각 장소는 3단계 탐색을 완료하면 진엔딩 전용 부품을 얻는다.");
+  setScheduleButtons([
+    ...sites.map(([siteId, site]) => {
+      const progress = gameState.exploration[site.progressKey];
+      const complete = progress >= site.steps.length;
+      return {
+        text: `${site.label} (${Math.min(progress, site.steps.length)}/${site.steps.length})${complete ? " 완료" : ""}`,
+        onClick: () => renderGradeChoices(site.label, (grade) => applyExploreResult(siteId, grade)),
+        disabled: complete
+      };
+    }),
+    { text: "돌아가기", onClick: () => renderScheduleActionChoices("행동 선택으로 돌아왔다.") }
+  ]);
+}
+
+function renderGradeChoices(title, onResult) {
+  schedulePanel.classList.remove("schedule-panel-hidden");
+  refreshSchedulePanel(`${title} 결과를 선택한다.`, "실제 미니게임이 들어오기 전까지는 Great / Good / Miss 버튼으로 결과를 테스트한다.");
+  setScheduleButtons(
+    Object.entries(scheduleData.resultGrades).map(([grade, info]) => ({
+      text: info.label,
+      onClick: () => onResult(grade)
+    }))
+  );
+}
+
+function showScheduleMessage(title, message, buttons = []) {
+  schedulePanel.classList.remove("schedule-panel-hidden");
+  scheduleTitle.textContent = title;
+  scheduleSubtitle.textContent = `${gameState.day}일차 ${timeSlotLabel()}`;
+  renderScheduleStats();
+  setScheduleLog(message);
+  setScheduleButtons(buttons.length ? buttons : [
+    { text: "닫기", onClick: closeSchedulePanel }
+  ]);
+}
+
+function closeSchedulePanel() {
+  schedulePanel.classList.add("schedule-panel-hidden");
+  interactionLockedUntil = performance.now() + 300;
+}
+
+function showScheduleStatus() {
+  showScheduleMessage(
+    "상태창",
+    [
+      `탐색 진행도`,
+      `건물: ${gameState.exploration.building}/3`,
+      `편의점: ${gameState.exploration.convenienceStore}/3`,
+      `뒷동산: ${gameState.exploration.hill}/3`,
+      ``,
+      `특수 부품: ${specialPartsLabel()}`,
+      `일반 부품: ${generalPartsLabel()}`
+    ].join("\n")
+  );
+}
+
+function showMoveMenu() {
+  if (gameState.timeSlot === "night") {
+    showScheduleMessage("밤", "밤이 깊었다. 오늘은 더 나가지 말고 침대에서 자자.");
+    return;
+  }
+
+  const locations = [
+    ["building", "건물 내부"],
+    ["convenienceStore", "편의점"],
+    ["hill", "뒷동산"],
+    ["room", "방으로 돌아가기"]
+  ];
+  showScheduleMessage(
+    "장소 이동",
+    "이동 자체는 시간을 소모하지 않는다.",
+    locations.map(([locationId, label]) => ({
+      text: label,
+      onClick: () => startScheduleFieldMode(locationId)
+    }))
+  );
+}
+
+function showActionConfirm(interaction) {
+  const action = interaction.action;
+  const label = interaction.label ?? "상호작용";
+
+  if (!action) {
+    showScheduleMessage(label, interaction.prompt ?? interaction.text ?? "");
+    return;
+  }
+
+  if (action.type === "move") {
+    if (action.locationId) {
+      startScheduleFieldMode(action.locationId);
+      return;
+    }
+    showMoveMenu();
+    return;
+  }
+
+  if (gameState.timeSlot === "night" && action.type !== "rest") {
+    showScheduleMessage(label, "밤이 깊었다. 지금은 다른 일을 하기보다 침대에서 자야 할 것 같다.");
+    return;
+  }
+
+  if (action.type === "talk") {
+    showScheduleMessage(label, interaction.prompt ?? interaction.text ?? "");
+    return;
+  }
+
+  const startAction = () => {
+    if (action.type === "minigame") {
+      const minigame = scheduleData.minigames.find((item) => item.id === action.minigameId);
+      if (!minigame || gameState.day < minigame.unlockDay) {
+        showScheduleMessage(label, `${minigame?.label ?? "이 행동"}은 아직 준비되지 않았다.`);
+        return;
+      }
+      renderGradeChoices(minigame.label, (grade) => applyMinigameResult(minigame, grade));
+      return;
+    }
+
+    if (action.type === "partTime") {
+      renderPartTimeResultChoices();
+      return;
+    }
+
+    if (action.type === "explore") {
+      const site = scheduleData.exploreSites[action.siteId];
+      const progress = gameState.exploration[site.progressKey];
+      if (progress >= site.steps.length) {
+        showScheduleMessage(site.label, `${site.rewardLabel}은 이미 확보했다.`);
+        return;
+      }
+      renderGradeChoices(site.label, (grade) => applyExploreResult(action.siteId, grade));
+      return;
+    }
+
+    if (action.type === "rest") {
+      if (gameState.timeSlot === "night") {
+        renderSleepConfirm();
+        return;
+      }
+      renderRestResultChoices();
+    }
+  };
+
+  showScheduleMessage(
+    label,
+    gameState.timeSlot === "night" && action.type === "rest"
+      ? "오늘 하루를 마치고 잠들까?"
+      : interaction.prompt ?? "이 행동을 실행할까?",
+    [
+    { text: "시작한다", onClick: startAction },
+    { text: "그만둔다", onClick: closeSchedulePanel }
+    ]
+  );
+}
+
+function gradeAmount(grade, great, good, miss) {
+  return { great, good, miss }[grade] ?? miss;
+}
+
+function applyMinigameResult(minigame, grade) {
+  const amount = gradeAmount(grade, 3, 2, 1);
+  gameState[minigame.stat] += amount;
+  gameState.communicationProgress = Math.min(100, gameState.communicationProgress + gradeAmount(grade, 4, 3, 2));
+  if (grade === "miss") {
+    gameState.fatigue += 1;
+  }
+  advanceScheduleTime(`${minigame.label}: ${scheduleData.resultGrades[grade].label}\n${amount}만큼 성장했다.`);
+}
+
+function applyPartTimeResult(grade) {
+  const money = gradeAmount(grade, 12000, 8000, 5000);
+  gameState.money += money;
+  addPurchasedPart();
+  gameState.spaceshipProgress = Math.min(100, gameState.spaceshipProgress + gradeAmount(grade, 2, 1, 1));
+  if (grade === "miss") {
+    gameState.fatigue += 1;
+  }
+  advanceScheduleTime(`편의점 알바: ${scheduleData.resultGrades[grade].label}\n${money.toLocaleString("ko-KR")}원을 벌었다. Miss여도 오늘의 몫은 받았다.`);
+}
+
+function addPurchasedPart() {
+  const keys = ["electronics", "cable", "battery", "tools"];
+  const target = keys.reduce((lowest, key) =>
+    gameState.purchasedParts[key] < gameState.purchasedParts[lowest] ? key : lowest
+  , keys[0]);
+  gameState.purchasedParts[target] += 1;
+}
+
+function applyExploreResult(siteId, grade) {
+  const site = scheduleData.exploreSites[siteId];
+  const progress = gameState.exploration[site.progressKey];
+  const stepText = site.steps[progress] ?? `${site.label} 탐색은 이미 충분히 진행했다.`;
+  gameState.exploration[site.progressKey] = Math.min(site.steps.length, progress + 1);
+  gameState.communicationProgress = Math.min(100, gameState.communicationProgress + gradeAmount(grade, 3, 2, 1));
+  gameState.spaceshipProgress = Math.min(100, gameState.spaceshipProgress + gradeAmount(grade, 2, 1, 1));
+  if (siteId === "hill") {
+    gameState.kimTrust += gradeAmount(grade, 2, 1, 1);
+  }
+  if (grade === "miss") {
+    gameState.fatigue += 1;
+  }
+
+  let message = `${site.label} 탐색: ${scheduleData.resultGrades[grade].label}\n${stepText}`;
+  if (gameState.exploration[site.progressKey] >= site.steps.length && !gameState.parts[site.rewardKey]) {
+    gameState.parts[site.rewardKey] = true;
+    message += `\n${site.rewardLabel}을 획득했다.`;
+  }
+
+  advanceScheduleTime(message);
+}
+
+function applyRestResult(grade) {
+  const recovery = gradeAmount(grade, 4, 3, 2);
+  gameState.fatigue = Math.max(0, gameState.fatigue - recovery);
+  gameState.badEndingFlag = Math.max(0, gameState.badEndingFlag - (grade === "great" ? 1 : 0));
+  advanceScheduleTime(`휴식: ${scheduleData.resultGrades[grade].label}\n피로도가 ${recovery}만큼 줄었다.`);
+}
+
+function renderSleepConfirm() {
+  showScheduleMessage("잠들기", "오늘은 여기까지. 침대에 누워 하루를 마무리한다.", [
+    { text: "잔다", onClick: () => renderDailySettlement("빛나는 침대에 몸을 눕혔다.") },
+    { text: "아직", onClick: closeSchedulePanel }
+  ]);
+}
+
+function advanceScheduleTime(message) {
+  const index = scheduleData.timeSlots.findIndex((slot) => slot.id === gameState.timeSlot);
+  if (index < scheduleData.timeSlots.length - 1) {
+    gameState.timeSlot = scheduleData.timeSlots[index + 1].id;
+    const reachedNight = gameState.timeSlot === "night";
+    const nextLocationId = reachedNight ? "room" : currentScheduleLocationId;
+    currentScheduleLocationId = nextLocationId;
+    showScheduleMessage("시간 경과", `${message}\n\n${timeSlotLabel()}으로 넘어갔다.`, [
+      {
+        text: "계속",
+        onClick: () => startScheduleFieldMode(
+          nextLocationId,
+          reachedNight ? "밤이 깊었다. 방으로 돌아왔다. 침대에서 자야 다음 날로 넘어간다." : ""
+        )
+      }
+    ]);
+    return;
+  }
+
+  renderDailySettlement(message);
+}
+
+function renderDailySettlement(message) {
+  if (gameState.fatigue >= 10) {
+    gameState.badEndingFlag += 1;
+  }
+
+  refreshSchedulePanel(`${gameState.day}일차 정산`, `${message}\n\n하루가 끝났다. 피로도가 너무 높으면 배드엔딩 위험이 조금씩 쌓인다.`);
+  scheduleTitle.textContent = `${gameState.day}일차 정산`;
+  const isFinalDay = gameState.day >= 30;
+  setScheduleButtons([
+    {
+      text: isFinalDay ? "엔딩 확인" : "다음 날로",
+      onClick: () => {
+        if (isFinalDay) {
+          renderEndingResult();
+          return;
+        }
+        gameState.day += 1;
+        gameState.timeSlot = "morning";
+        startScheduleFieldMode("room", `${gameState.day}일차 아침이 밝았다.`);
+      }
+    }
+  ]);
+}
+
+function endingForState() {
+  if (gameState.badEndingFlag >= 5) {
+    return scheduleData.endings.find((ending) => ending.id === "bad");
+  }
+  return scheduleData.endings.find((ending) => ending.condition(gameState));
+}
+
+function renderEndingResult() {
+  const ending = endingForState();
+  refreshSchedulePanel(`엔딩: ${ending.title}`, "30일이 끝났다. 누적된 선택과 부품 상태에 따라 엔딩이 결정됐다.");
+  scheduleTitle.textContent = `엔딩: ${ending.title}`;
+  setScheduleButtons([
+    { text: "2일차부터 다시", onClick: resetScheduleMode },
+    { text: "처음부터 다시", onClick: () => jumpToScene(story.start) }
+  ]);
+  setScheduleLog(`도달 엔딩: ${ending.title}\n돈 ${gameState.money.toLocaleString("ko-KR")}원 / 교신장치 ${gameState.communicationProgress}% / 우주선 ${gameState.spaceshipProgress}%\n특수 부품: ${specialPartsLabel()}`);
+}
+
+function resetScheduleMode() {
+  gameState = cloneScheduleState();
+  gameState.day = 2;
+  gameState.timeSlot = "morning";
+  currentScheduleLocationId = "room";
+  startScheduleFieldMode("room", "2일차 아침으로 돌아왔다.");
+}
+
 function renderScene(sceneId, options = {}) {
   stopWalkMode();
   clearTyping();
   clearAutoAdvance();
+  hideDialogueMode();
+  schedulePanel.classList.add("schedule-panel-hidden");
+  scheduleMiniHud.classList.add("schedule-mini-hud-hidden");
+  isScheduleMode = false;
   const scene = story.scenes[sceneId];
   const sceneChoices = scene.choices ?? [];
   if (options.trackHistory !== false && currentSceneId && currentSceneId !== sceneId && story.scenes[currentSceneId]) {
@@ -1128,19 +1981,26 @@ function renderScene(sceneId, options = {}) {
     return;
   }
 
-  const isNarration = ["나레이션", "프롤로그", "1장"].includes(scene.speaker);
+  if (scene.mode === "schedule") {
+    startScheduleMode(scene.text);
+    return;
+  }
+
+  const isNarration = isNarrationScene(scene);
   const isCenteredText = isNarration;
   choices.replaceChildren();
   narrationChoices.replaceChildren();
   narrationPanel.classList.toggle("narration-panel-hidden", !isCenteredText);
+  narrationPrompt?.classList.add("narration-prompt-hidden");
   narrationText.textContent = "";
   hud.classList.toggle("hud-hidden", isCenteredText);
 
-  speaker.textContent = isCenteredText ? "" : scene.speaker;
+  speaker.textContent = isCenteredText ? "" : speakerDisplayName(scene.speaker);
   speaker.hidden = isCenteredText;
   dialogue.textContent = "";
 
   renderStageActors(actorIdsForScene(scene));
+  renderDialogueActors(scene, isNarration);
   stageCharacter.hidden = true;
   stageCharacter.classList.remove("stage-character-visible");
   stageCharacterSheet.hidden = true;
@@ -1188,9 +2048,12 @@ function saveTimestamp() {
 
 function createSaveData() {
   return {
-    version: 1,
+    version: 2,
     sceneId: currentSceneId,
     sceneHistory: [...sceneHistory],
+    gameState: normalizeScheduleState(gameState),
+    isScheduleMode,
+    scheduleLocationId: currentScheduleLocationId,
     isAutoMode,
     savedAt: saveTimestamp()
   };
@@ -1243,6 +2106,9 @@ function loadSaveData(data) {
   if (Array.isArray(data.sceneHistory)) {
     sceneHistory.push(...data.sceneHistory.filter((sceneId) => story.scenes[sceneId]));
   }
+  gameState = normalizeScheduleState(data.gameState);
+  isScheduleMode = Boolean(data.isScheduleMode);
+  currentScheduleLocationId = data.scheduleLocationId ?? "room";
   setAutoMode(Boolean(data.isAutoMode));
   interactionLockedUntil = performance.now() + 300;
   titleScreen.classList.add("title-screen-hidden");
@@ -1314,6 +2180,8 @@ function startWalkMode(scene) {
   const character = characters[scene.character];
   heldKeys.clear();
   keyPressOrder.clear();
+  setStage(scene.stage);
+  applySceneCamera(scene);
   Object.assign(walkTuning, stageWalkTunings[scene.stage] ?? walkTuning);
 
   walkMode = {
@@ -1326,11 +2194,13 @@ function startWalkMode(scene) {
     activeBlockIndex: -1,
     interactionText: null,
     interactions: scene.interactions ?? interactionBlocks,
+    scheduleLocationId: scene.scheduleLocationId,
     x: scene.startX ?? tuning.stageX,
     y: scene.startY ?? tuning.stageY
   };
 
   hud.classList.add("hud-hidden");
+  renderStageActors(scene.actors ?? []);
   renderCharacter(scene.character);
   stageCharacter.hidden = false;
   stageCharacterSheet.hidden = true;
@@ -1425,7 +2295,7 @@ function updateWalkMode(timestamp) {
 
   let xAxis = movementAxis(["arrowleft"], ["arrowright"]);
   let yAxis = movementAxis(["arrowup"], ["arrowdown"]);
-  if (walkMode.interactionText) {
+  if (walkMode.interactionText || (isScheduleMode && !schedulePanel.classList.contains("schedule-panel-hidden"))) {
     setWalkSprite(walkMode.direction);
     walkAnimationFrame = window.requestAnimationFrame(updateWalkMode);
     return;
@@ -1513,13 +2383,18 @@ function interactWithActiveBlock() {
   }
 
   const block = walkMode.interactions[walkMode.activeBlockIndex];
+  if (isScheduleMode && block.action) {
+    showActionConfirm(block);
+    return true;
+  }
+
   clearTyping();
   walkMode.interactionText = block.text;
   hud.classList.remove("hud-hidden");
   speaker.textContent = block.speaker ?? "이빛나";
   dialogue.textContent = "";
   choices.replaceChildren();
-  renderCharacter(block.character ?? "bina");
+  renderCharacter(block.character ?? "bina", { renderPortrait: false });
   setStageCharacterPosition(walkMode.x, walkMode.y);
   setWalkSprite(walkMode.direction);
   advancePrompt.classList.add("advance-prompt-hidden");
@@ -1827,6 +2702,64 @@ function activeDebugCharacterId() {
   return debugCharacter?.value ?? "bina";
 }
 
+function activeDialogueStandingId() {
+  const characterId = activeDebugCharacterId();
+  return dialogueActorPositions[characterId] ? characterId : "bina";
+}
+
+function syncDialogueStandingControls() {
+  const values = dialogueActorPositions[activeDialogueStandingId()];
+  const fields = {
+    dialogueActiveX: "activeX",
+    dialogueInactiveX: "inactiveX",
+    dialogueStandingY: "y",
+    dialogueStandingSize: "size",
+    dialogueFocusScale: "focusScale",
+    dialogueMutedScale: "mutedScale"
+  };
+
+  Object.entries(fields).forEach(([inputId, key]) => {
+    const input = document.querySelector(`#${inputId}`);
+    if (input) {
+      input.value = values[key];
+    }
+  });
+
+  const flipInput = document.querySelector("#dialogueFlipX");
+  if (flipInput) {
+    flipInput.checked = Boolean(values.flipX);
+  }
+}
+
+function applyDialogueStandingControls() {
+  const values = dialogueActorPositions[activeDialogueStandingId()];
+  const fields = {
+    dialogueActiveX: "activeX",
+    dialogueInactiveX: "inactiveX",
+    dialogueStandingY: "y",
+    dialogueStandingSize: "size",
+    dialogueFocusScale: "focusScale",
+    dialogueMutedScale: "mutedScale"
+  };
+
+  Object.entries(fields).forEach(([inputId, key]) => {
+    const input = document.querySelector(`#${inputId}`);
+    if (input) {
+      values[key] = Number(input.value);
+    }
+  });
+
+  const flipInput = document.querySelector("#dialogueFlipX");
+  if (flipInput) {
+    values.flipX = flipInput.checked;
+  }
+
+  const scene = story.scenes[currentSceneId];
+  if (scene) {
+    renderDialogueActors(scene, isNarrationScene(scene));
+  }
+}
+
 function syncTuningFromCharacter(characterId) {
   const values = editableCharacterTuning(characterId);
   ["stageX", "stageY", "stageSize", "stageScaleX", "stageScaleY", "portraitX", "portraitY", "portraitZoom"].forEach(
@@ -1852,6 +2785,8 @@ function syncCharacterFromTuning(characterId) {
 function tuningText() {
   const characterId = activeDebugCharacterId();
   const characterValues = editableCharacterTuning(characterId);
+  const dialogueStandingId = activeDialogueStandingId();
+  const dialogueStandingValues = dialogueActorPositions[dialogueStandingId];
   const hasSceneTuning = Boolean(sceneCharacterTunings[currentSceneId]?.[characterId]);
   const scenePrefix = Object.keys(scenePrefixCharacterTunings).find((prefix) => currentSceneId.startsWith(prefix));
   const hasScenePrefixTuning = Boolean(scenePrefixCharacterTunings[scenePrefix]?.[characterId]);
@@ -1870,14 +2805,29 @@ function tuningText() {
     `  portraitZoom: ${characterValues.portraitZoom}`,
     "}",
     "",
+    `/* dialogue standing / ${dialogueStandingId} */`,
+    `dialogueActorPositions.${dialogueStandingId}: {`,
+    `  activeX: ${dialogueStandingValues.activeX},`,
+    `  inactiveX: ${dialogueStandingValues.inactiveX},`,
+    `  y: ${dialogueStandingValues.y},`,
+    `  size: ${dialogueStandingValues.size},`,
+    `  focusScale: ${dialogueStandingValues.focusScale},`,
+    `  mutedScale: ${dialogueStandingValues.mutedScale},`,
+    `  flipX: ${dialogueStandingValues.flipX}`,
+    "}",
+    "",
     ":root {",
     cameraTuningText(),
     `  --dialogue-opacity: ${tuning.dialogueOpacity};`,
     `  --dialogue-width: ${tuning.dialogueWidth}%;`,
     `  --dialogue-min-height: ${tuning.dialogueHeight}px;`,
+    `  --dialogue-text-min-height: ${tuning.dialogueHeight}px;`,
+    `  --dialogue-padding: ${tuning.dialoguePadding}px;`,
+    `  --dialogue-x: ${tuning.dialogueX}%;`,
+    `  --dialogue-bottom: calc((100vh - var(--scene-canvas-height)) / 2 + ${tuning.dialogueY}vh);`,
     `  --advance-prompt-x: ${tuning.advancePromptX}%;`,
     `  --advance-prompt-y: ${tuning.advancePromptY}%;`,
-    `  --advance-prompt-size: ${tuning.advancePromptSize}%;`,
+    `  --advance-prompt-size-ratio: ${tuning.advancePromptSize / 200};`,
     "}",
     "",
     walkTuningText()
@@ -1886,6 +2836,7 @@ function tuningText() {
 
 function applyTuning() {
   syncCharacterFromTuning(activeDebugCharacterId());
+  applyDialogueStandingControls();
   applyCharacterTuning(activeDebugCharacterId());
   applyCameraTuning();
   refreshStageActors();
@@ -1893,11 +2844,18 @@ function applyTuning() {
   document.documentElement.style.setProperty("--dialogue-opacity", tuning.dialogueOpacity);
   document.documentElement.style.setProperty("--dialogue-width", `${tuning.dialogueWidth}%`);
   document.documentElement.style.setProperty("--dialogue-min-height", `${tuning.dialogueHeight}px`);
+  document.documentElement.style.setProperty("--dialogue-text-min-height", `${tuning.dialogueHeight}px`);
+  document.documentElement.style.setProperty("--dialogue-padding", `${tuning.dialoguePadding}px`);
+  document.documentElement.style.setProperty("--dialogue-x", `${tuning.dialogueX}%`);
+  document.documentElement.style.setProperty(
+    "--dialogue-bottom",
+    `calc((100vh - var(--scene-canvas-height)) / 2 + ${tuning.dialogueY}vh)`
+  );
   document.documentElement.style.setProperty("--advance-prompt-x", `${tuning.advancePromptX}%`);
   document.documentElement.style.setProperty("--advance-prompt-y", `${tuning.advancePromptY}%`);
   document.documentElement.style.setProperty(
-    "--advance-prompt-size",
-    `${tuning.advancePromptSize}%`
+    "--advance-prompt-size-ratio",
+    String(tuning.advancePromptSize / 200)
   );
   debugOutput.textContent = tuningText();
 }
@@ -1911,6 +2869,7 @@ function setupDebugPanel() {
   }
 
   debugPanel.classList.add("debug-panel-visible");
+  debugPanel.classList.add("debug-panel-collapsed");
   stageJumpTabs.classList.add("stage-jump-tabs-visible");
   debugCharacterStage.value = currentStageName;
   debugCharacter.value = "bina";
@@ -1925,6 +2884,7 @@ function setupDebugPanel() {
 
   debugCharacter.addEventListener("change", () => {
     syncTuningFromCharacter(activeDebugCharacterId());
+    syncDialogueStandingControls();
     syncSceneImageControls();
     applyTuning();
   });
@@ -1936,6 +2896,26 @@ function setupDebugPanel() {
       tuning[key] = Number(input.value);
       applyTuning();
     });
+  });
+
+  [
+    "dialogueActiveX",
+    "dialogueInactiveX",
+    "dialogueStandingY",
+    "dialogueStandingSize",
+    "dialogueFocusScale",
+    "dialogueMutedScale"
+  ].forEach((key) => {
+    const input = document.querySelector(`#${key}`);
+    input?.addEventListener("input", () => {
+      applyDialogueStandingControls();
+      debugOutput.textContent = tuningText();
+    });
+  });
+
+  document.querySelector("#dialogueFlipX")?.addEventListener("change", () => {
+    applyDialogueStandingControls();
+    debugOutput.textContent = tuningText();
   });
 
   setupSceneImageControls();
@@ -1954,6 +2934,12 @@ function setupDebugPanel() {
     }
   });
 
+  debugPanelTab?.addEventListener("click", () => {
+    const isCollapsed = debugPanel.classList.toggle("debug-panel-collapsed");
+    debugPanelTab.setAttribute("aria-label", isCollapsed ? "디버그 패널 열기" : "디버그 패널 닫기");
+  });
+
+  syncDialogueStandingControls();
   applyTuning();
 }
 
@@ -2076,6 +3062,10 @@ document.addEventListener("keydown", (event) => {
     return;
   }
 
+  if (!schedulePanel.classList.contains("schedule-panel-hidden") && key !== "s") {
+    return;
+  }
+
   if (key === "s") {
     event.preventDefault();
     isUiHidden = !isUiHidden;
@@ -2151,6 +3141,8 @@ function startGame() {
   }
 
   hasStarted = true;
+  gameState = cloneScheduleState();
+  currentScheduleLocationId = "room";
   encounterWipe.classList.add("encounter-wipe-active");
 
   window.setTimeout(() => {
@@ -2241,6 +3233,9 @@ saveControls.addEventListener("click", (event) => {
 });
 
 saveModalClose.addEventListener("click", closeSaveModal);
+
+scheduleClose.addEventListener("click", closeSchedulePanel);
+scheduleStatusButton.addEventListener("click", showScheduleStatus);
 
 saveModal.addEventListener("click", (event) => {
   if (event.target === saveModal) {

@@ -16,6 +16,7 @@
         <button type="button" data-jump-scene="crash_lands">추락 직후</button>
         <button type="button" data-jump-scene="alien_mic">뿅뿅 등장</button>
         <button type="button" data-jump-scene="chapter1_title">1장</button>
+        <button type="button" data-jump-scene="schedule_start">2일차</button>
       </nav>
 
       <section class="title-screen" id="titleScreen" aria-label="메인 화면">
@@ -95,27 +96,36 @@
               alt=""
             />
           </div>
-          <div class="narration-panel narration-panel-hidden" id="narrationPanel">
-            <p class="narration-text" id="narrationText"></p>
-            <div class="narration-choices" id="narrationChoices"></div>
-            <div class="narration-prompt" aria-hidden="true">
-              <img
-                class="advance-prompt-frame advance-prompt-a"
-                src="./assets/images/ui/a-key-1.png"
-                alt=""
-              />
-              <img
-                class="advance-prompt-frame advance-prompt-b"
-                src="./assets/images/ui/a-key-2.png"
-                alt=""
-              />
-            </div>
-          </div>
           <div class="debug-area-layer" id="debugAreaLayer" aria-hidden="true">
             <div class="debug-move-bounds" id="debugMoveBounds"></div>
             <div id="debugInteractionBlocks"></div>
           </div>
         </div>
+      </section>
+
+      <div class="narration-panel narration-panel-hidden" id="narrationPanel">
+        <p class="narration-text" id="narrationText"></p>
+        <div class="narration-choices" id="narrationChoices"></div>
+        <div class="narration-prompt" aria-hidden="true">
+          <img
+            class="advance-prompt-frame advance-prompt-a"
+            src="./assets/images/ui/a-key-1.png"
+            alt=""
+          />
+          <img
+            class="advance-prompt-frame advance-prompt-b"
+            src="./assets/images/ui/a-key-2.png"
+            alt=""
+          />
+        </div>
+      </div>
+
+      <section class="schedule-mini-hud schedule-mini-hud-hidden" id="scheduleMiniHud" aria-label="일정 상태">
+        <span id="miniDay">2일차</span>
+        <span id="miniTimeSlot">아침</span>
+        <span id="miniMoney">0원</span>
+        <span id="miniFatigue">피로 0</span>
+        <button type="button" id="scheduleStatusButton">상태창</button>
       </section>
 
       <div class="cutscene" id="cutscene" aria-hidden="true">
@@ -143,6 +153,21 @@
             <button type="button" data-save-page="2">3</button>
           </div>
         </div>
+      </section>
+
+      <div class="dialogue-actors dialogue-actors-hidden" id="dialogueActors" aria-hidden="true"></div>
+
+      <section class="schedule-panel schedule-panel-hidden" id="schedulePanel" aria-label="30일 일정 관리">
+        <div class="schedule-header">
+          <div>
+            <strong id="scheduleTitle">2일차 아침</strong>
+            <span id="scheduleSubtitle">오늘의 행동을 선택한다.</span>
+          </div>
+          <button type="button" id="scheduleClose">닫기</button>
+        </div>
+        <div class="schedule-stats" id="scheduleStats"></div>
+        <div class="schedule-body" id="scheduleBody"></div>
+        <div class="schedule-log" id="scheduleLog"></div>
       </section>
 
       <section class="hud">
@@ -179,6 +204,7 @@
       </section>
 
       <aside class="debug-panel" id="debugPanel" aria-label="캐릭터와 대화창 조절 패널">
+        <button class="debug-panel-tab" id="debugPanelTab" type="button" aria-label="디버그 패널 열기">DEBUG</button>
         <div class="debug-panel-header" data-drag-handle>
           <strong>캐릭터 / 대화창</strong>
           <button class="debug-copy" id="copyTuning" type="button">복사</button>
@@ -248,15 +274,27 @@
 
         <label>
           대화창 불투명도
-          <input id="dialogueOpacity" type="range" min="0" max="1" value="0" step="0.01" />
+          <input id="dialogueOpacity" type="range" min="0" max="1" value="1" step="0.01" />
         </label>
         <label>
           대화창 너비
-          <input id="dialogueWidth" type="range" min="45" max="100" value="83" step="1" />
+          <input id="dialogueWidth" type="range" min="45" max="100" value="100" step="1" />
         </label>
         <label>
           대화창 높이
           <input id="dialogueHeight" type="range" min="0" max="360" value="0" step="1" />
+        </label>
+        <label>
+          대화창 여백
+          <input id="dialoguePadding" type="range" min="0" max="40" value="16" step="1" />
+        </label>
+        <label>
+          대화창 X
+          <input id="dialogueX" type="range" min="0" max="100" value="50" step="1" />
+        </label>
+        <label>
+          대화창 Y
+          <input id="dialogueY" type="range" min="-10" max="40" value="4" step="0.5" />
         </label>
         <label>
           A키 X
@@ -269,6 +307,34 @@
         <label>
           A키 크기
           <input id="advancePromptSize" type="range" min="1" max="12" value="7.7" step="0.1" />
+        </label>
+        <label>
+          대화 스탠딩 활성 X
+          <input id="dialogueActiveX" type="range" min="-20" max="120" value="50" step="0.5" />
+        </label>
+        <label>
+          대화 스탠딩 비활성 X
+          <input id="dialogueInactiveX" type="range" min="-20" max="120" value="50" step="0.5" />
+        </label>
+        <label>
+          대화 스탠딩 Y
+          <input id="dialogueStandingY" type="range" min="0" max="120" value="70" step="0.5" />
+        </label>
+        <label>
+          대화 스탠딩 크기
+          <input id="dialogueStandingSize" type="range" min="5" max="80" value="25" step="0.5" />
+        </label>
+        <label>
+          강조 스케일
+          <input id="dialogueFocusScale" type="range" min="0.5" max="2" value="1.08" step="0.01" />
+        </label>
+        <label>
+          비강조 스케일
+          <input id="dialogueMutedScale" type="range" min="0.5" max="2" value="0.95" step="0.01" />
+        </label>
+        <label>
+          대화 스탠딩 좌우반전
+          <input id="dialogueFlipX" type="checkbox" />
         </label>
         <label>
           카메라 X
@@ -344,6 +410,7 @@
     </main>
 
     <script src="./story.js"></script>
+    <script src="./scheduleData.js"></script>
     <script src="./game.js"></script>
   </body>
 </html>
