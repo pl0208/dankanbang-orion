@@ -2,6 +2,7 @@ const stage = document.querySelector("#stage");
 const sceneBackground = document.querySelector("#sceneBackground");
 const cutscene = document.querySelector("#cutscene");
 const cutsceneVideo = document.querySelector("#cutsceneVideo");
+const sleepWipe = document.querySelector("#sleepWipe");
 const titleScreen = document.querySelector("#titleScreen");
 const startPrompt = document.querySelector("#startPrompt");
 const stageJumpTabs = document.querySelector(".stage-jump-tabs");
@@ -22,6 +23,9 @@ const narrationPanel = document.querySelector("#narrationPanel");
 const narrationText = document.querySelector("#narrationText");
 const narrationChoices = document.querySelector("#narrationChoices");
 const narrationPrompt = document.querySelector(".narration-prompt");
+const systemPanel = document.querySelector("#systemPanel");
+const systemText = document.querySelector("#systemText");
+const systemPrompt = document.querySelector("#systemPrompt");
 const debugPanel = document.querySelector("#debugPanel");
 const debugPanelTab = document.querySelector("#debugPanelTab");
 const debugOutput = document.querySelector("#debugOutput");
@@ -76,6 +80,8 @@ let typingTimer = null;
 let typingTarget = null;
 let typingFullText = "";
 let typingComplete = null;
+let activeChoiceIndex = 0;
+let activeChoiceButtons = [];
 let saveMode = "save";
 let savePage = 0;
 let isAutoMode = false;
@@ -193,6 +199,12 @@ const characters = {
   },
   cupramuen: {
     sprite: "./assets/images/cupramuen.png"
+  },
+  cupramuenBina: {
+    sprite: "./assets/images/cupramuen.png"
+  },
+  cupramuenPyong: {
+    sprite: "./assets/images/cupramuen.png"
   }
 };
 
@@ -204,12 +216,14 @@ const characterImageOptions = [
   { label: "이빛나 걷기 위", value: "./assets/images/characters/bina-walk-up-1.png", type: "sprite" },
   { label: "이빛나 걷기 아래", value: "./assets/images/characters/bina-walk-down-1.png", type: "sprite" },
   { label: "뿅뿅 기본 인게임", value: "./assets/images/characters/pyong-sprite.png", type: "sprite" },
+  { label: "뿅뿅 외출 인게임", value: "./assets/images/characters/pyong-sprite-1.png", type: "sprite" },
   { label: "김철수 인게임 예정", value: "./assets/images/characters/cheolsu-sprite.png", type: "sprite" },
   { label: "별/우주선", value: "./assets/images/starship-1.png", type: "sprite" },
   { label: "추락한 별/우주선", value: "./assets/images/starship-2.png", type: "sprite" },
   { label: "열린 별/우주선", value: "./assets/images/starship-3.png", type: "sprite" },
   { label: "이빛나 기본 초상화", value: "./assets/images/characters/bina-portrait.png", type: "portrait" },
   { label: "뿅뿅 기본 초상화", value: "./assets/images/characters/pyong-portrait.png", type: "portrait" },
+  { label: "뿅뿅 외출 초상화", value: "./assets/images/characters/pyong-portrait-1.png", type: "portrait" },
   { label: "김철수 초상화 예정", value: "./assets/images/characters/cheolsu-portrait.png", type: "portrait" }
 ];
 
@@ -245,6 +259,10 @@ const sceneBackgrounds = {
   room5: "./assets/images/scene-room-5.png",
   room6: "./assets/images/scene-room-6.png",
   room7: "./assets/images/scene-room-7.png",
+  room8: "./assets/images/scene-room-8.png",
+  room9: "./assets/images/scene-room-9.png",
+  room10: "./assets/images/scene-room-10.png",
+  room11: "./assets/images/scene-room-11.png",
   roof: "./assets/images/scene-roof.png",
   roof2: "./assets/images/scene-roof2.png",
   roof3: "./assets/images/scene-roof3.png",
@@ -254,7 +272,11 @@ const sceneBackgrounds = {
   aptMorning: "./assets/images/scene-apt-1.png",
   aptAfternoon: "./assets/images/scene-apt-2.png",
   aptNight: "./assets/images/scene-apt-3.png",
+  aptOutside: "./assets/images/scene-apt-4.png",
   withU: "./assets/images/scene-withU.png",
+  withU1: "./assets/images/scene-withU-1.png",
+  withU2: "./assets/images/scene-withU-2.png",
+  withU3: "./assets/images/scene-withU-3.png",
   sanMorning: "./assets/images/scene-san-1.png",
   sanAfternoon: "./assets/images/scene-san-3.png",
   sanNight: "./assets/images/scene-san-2.png",
@@ -265,19 +287,19 @@ const sceneBackgrounds = {
 const dialogueCharacterIds = ["bina", "pyong", "cheolsu"];
 const dialogueActorPositions = {
   bina: {
-    activeX: 71,
-    inactiveX: 72,
-    y: 70,
-    size: 24.7,
+    activeX: 66.5,
+    inactiveX: 66.5,
+    y: 60,
+    size: 31,
     focusScale: 2,
     mutedScale: 1.66,
     flipX: false
   },
   pyong: {
-    activeX: 28,
-    inactiveX: 29.5,
-    y: 70,
-    size: 22.8,
+    activeX: 31,
+    inactiveX: 31,
+    y: 63.5,
+    size: 29,
     focusScale: 2,
     mutedScale: 1.62,
     flipX: true
@@ -304,6 +326,10 @@ const stageCameraDefaults = {
   room5: { x: 0, y: 0, zoom: 1, duration: 650 },
   room6: { x: 0, y: 0, zoom: 1, duration: 650 },
   room7: { x: 0, y: 0, zoom: 1, duration: 650 },
+  room8: { x: 0, y: 0, zoom: 1, duration: 650 },
+  room9: { x: 0, y: 0, zoom: 1, duration: 650 },
+  room10: { x: 0, y: 0, zoom: 1, duration: 650 },
+  room11: { x: 0, y: 0, zoom: 1, duration: 650 },
   roof: { x: 0, y: -12, zoom: 1, duration: 650 },
   roof2: { x: 0, y: -12, zoom: 1, duration: 650 },
   roof3: { x: 0, y: -12, zoom: 1, duration: 650 },
@@ -313,7 +339,11 @@ const stageCameraDefaults = {
   aptMorning: { x: 0, y: 0, zoom: 1, duration: 650 },
   aptAfternoon: { x: 0, y: 0, zoom: 1, duration: 650 },
   aptNight: { x: 0, y: 0, zoom: 1, duration: 650 },
+  aptOutside: { x: 0, y: 0, zoom: 1, duration: 650 },
   withU: { x: 0, y: 0, zoom: 1, duration: 650 },
+  withU1: { x: 0, y: 0, zoom: 1, duration: 650 },
+  withU2: { x: 0, y: 0, zoom: 1, duration: 650 },
+  withU3: { x: 0, y: 0, zoom: 1, duration: 650 },
   sanMorning: { x: 0, y: 0, zoom: 1, duration: 650 },
   sanAfternoon: { x: 0, y: 0, zoom: 1, duration: 650 },
   sanNight: { x: 0, y: 0, zoom: 1, duration: 650 },
@@ -327,6 +357,7 @@ const tuning = {
   stageSize: 13.8,
   stageScaleX: 100,
   stageScaleY: 100,
+  stageFlipX: false,
   portraitX: 48,
   portraitY: 23,
   portraitZoom: 170,
@@ -415,6 +446,19 @@ const characterTunings = {
 };
 
 const stageCharacterTunings = {
+  roomMorning: {
+    bina: {
+      stageX: 40,
+      stageY: 63.7,
+      stageSize: 13.8,
+      stageScaleX: 100,
+      stageScaleY: 100,
+      stageFlipX: true,
+      portraitX: 48,
+      portraitY: 23,
+      portraitZoom: 170
+    }
+  },
   roof: {
     bina: {
       stageX: 54,
@@ -544,6 +588,7 @@ const stageCharacterTunings = {
       stageSize: 15.3,
       stageScaleX: 100,
       stageScaleY: 100,
+      stageFlipX: false,
       portraitX: 48,
       portraitY: 23,
       portraitZoom: 170
@@ -554,6 +599,7 @@ const stageCharacterTunings = {
       stageSize: 15.8,
       stageScaleX: 95,
       stageScaleY: 103,
+      stageFlipX: false,
       portraitX: 50,
       portraitY: 11,
       portraitZoom: 170
@@ -616,11 +662,50 @@ const sceneCharacterTunings = {
       portraitZoom: 170
     },
     bina: {
-      stageX: 39,
-      stageY: 53.5,
+      stageX: 69,
+      stageY: 66.8,
       stageSize: 15.3,
       stageScaleX: 100,
       stageScaleY: 100,
+      portraitX: 48,
+      portraitY: 23,
+      portraitZoom: 170
+    }
+  },
+  chapter1_fridge_empty: {
+    bina: {
+      stageX: 69,
+      stageY: 36,
+      stageSize: 15.3,
+      stageScaleX: 100,
+      stageScaleY: 100,
+      stageFlipX: true,
+      portraitX: 48,
+      portraitY: 23,
+      portraitZoom: 170
+    }
+  },
+  chapter1_hoodie: {
+    bina: {
+      stageX: 31,
+      stageY: 36,
+      stageSize: 15.3,
+      stageScaleX: 100,
+      stageScaleY: 100,
+      stageFlipX: false,
+      portraitX: 48,
+      portraitY: 23,
+      portraitZoom: 170
+    }
+  },
+  chapter1_manager_pyong: {
+    bina: {
+      stageX: 49,
+      stageY: 36,
+      stageSize: 13.8,
+      stageScaleX: 100,
+      stageScaleY: 100,
+      stageFlipX: false,
       portraitX: 48,
       portraitY: 23,
       portraitZoom: 170
@@ -918,6 +1003,10 @@ function buildEncounterWipe() {
 }
 
 function setStage(stageName) {
+  if (stageName === "room" && currentSceneId.startsWith("chapter1_") && isAtOrAfterScene("chapter1_morning")) {
+    stageName = "roomMorning";
+  }
+
   currentStageName = stageName;
   if (debugCharacterStage) {
     debugCharacterStage.value = stageName;
@@ -951,34 +1040,81 @@ function setImage(image, src, visibleClass, onLoad, onError) {
 }
 
 function getCharacterTuning(characterId) {
-  const scenePrefix = Object.keys(scenePrefixCharacterTunings).find((prefix) => currentSceneId.startsWith(prefix));
-  return sceneCharacterTunings[currentSceneId]?.[characterId] ?? progressionCharacterTuning(characterId) ?? scenePrefixCharacterTunings[scenePrefix]?.[characterId] ?? stageCharacterTunings[currentStageName]?.[characterId] ?? characterTunings[characterId] ?? characterTunings.bina;
+  return effectiveCharacterTuningSource(characterId).values;
 }
 
 function editableStageName() {
-  return debugCharacterStage?.value ?? currentStageName;
+  if (debugPanel?.classList.contains("debug-panel-visible") && debugCharacterStage?.value) {
+    return debugCharacterStage.value;
+  }
+
+  return currentStageName;
 }
 
 function editableWalkStageName() {
   return currentStageName;
 }
 
-function editableCharacterTuning(characterId) {
-  if (sceneCharacterTunings[currentSceneId]?.[characterId]) {
-    return sceneCharacterTunings[currentSceneId][characterId];
-  }
+function currentScenePrefix() {
+  return Object.keys(scenePrefixCharacterTunings).find((prefix) => currentSceneId.startsWith(prefix));
+}
 
-  const scenePrefix = Object.keys(scenePrefixCharacterTunings).find((prefix) => currentSceneId.startsWith(prefix));
-  if (scenePrefixCharacterTunings[scenePrefix]?.[characterId]) {
-    return scenePrefixCharacterTunings[scenePrefix][characterId];
-  }
-
-  const stageName = editableStageName();
+function stageTuningSource(stageName, characterId) {
   stageCharacterTunings[stageName] ??= {};
   stageCharacterTunings[stageName][characterId] ??= {
     ...(characterTunings[characterId] ?? characterTunings.bina)
   };
-  return stageCharacterTunings[stageName][characterId];
+
+  return {
+    name: stageName,
+    values: stageCharacterTunings[stageName][characterId]
+  };
+}
+
+function effectiveCharacterTuningSource(characterId, options = {}) {
+  const selectedStageName = editableStageName();
+
+  if (selectedStageName !== currentStageName) {
+    return stageTuningSource(selectedStageName, characterId);
+  }
+
+  if (sceneCharacterTunings[currentSceneId]?.[characterId]) {
+    return {
+      name: currentSceneId,
+      values: sceneCharacterTunings[currentSceneId][characterId]
+    };
+  }
+
+  const progressionValues = progressionCharacterTuning(characterId);
+  if (progressionValues) {
+    if (options.forEdit) {
+      sceneCharacterTunings[currentSceneId] ??= {};
+      sceneCharacterTunings[currentSceneId][characterId] ??= { ...progressionValues };
+      return {
+        name: currentSceneId,
+        values: sceneCharacterTunings[currentSceneId][characterId]
+      };
+    }
+
+    return {
+      name: currentSceneId,
+      values: progressionValues
+    };
+  }
+
+  const scenePrefix = currentScenePrefix();
+  if (scenePrefixCharacterTunings[scenePrefix]?.[characterId]) {
+    return {
+      name: scenePrefix,
+      values: scenePrefixCharacterTunings[scenePrefix][characterId]
+    };
+  }
+
+  return stageTuningSource(currentStageName, characterId);
+}
+
+function editableCharacterTuning(characterId) {
+  return effectiveCharacterTuningSource(characterId, { forEdit: true }).values;
 }
 
 function editableWalkTuning() {
@@ -991,12 +1127,25 @@ function sceneImagesFor(characterId, sceneId = currentSceneId) {
   return sceneImageTunings[sceneId]?.[characterId] ?? {};
 }
 
+function chapter1OutdoorTripImages(characterId, sceneId = currentSceneId) {
+  if (characterId === "pyong" && isChapter1OutdoorTripScene(sceneId)) {
+    return {
+      sprite: "./assets/images/characters/pyong-sprite-1.png",
+      portrait: "./assets/images/characters/pyong-portrait-1.png",
+      dialogueSprite: "./assets/images/characters/pyong-portrait-1.png"
+    };
+  }
+
+  return {};
+}
+
 function characterImagesFor(characterId, stageName = currentStageName, sceneId = currentSceneId) {
   const scenePrefix = Object.keys(scenePrefixImageDefaults).find((prefix) => sceneId.startsWith(prefix));
   return {
     ...(characters[characterId] ?? {}),
     ...(stageImageDefaults[stageName]?.[characterId] ?? {}),
     ...(scenePrefixImageDefaults[scenePrefix]?.[characterId] ?? {}),
+    ...chapter1OutdoorTripImages(characterId, sceneId),
     ...sceneImagesFor(characterId, sceneId)
   };
 }
@@ -1011,9 +1160,161 @@ function isAtOrAfterScene(sceneId) {
   return currentIndex >= 0 && targetIndex >= 0 && currentIndex >= targetIndex;
 }
 
+function isChapter1OutdoorTripScene(sceneId = currentSceneId) {
+  const currentIndex = sceneOrderIndex(sceneId);
+  const startIndex = sceneOrderIndex("chapter1_stairs_down");
+  const endIndex = sceneOrderIndex("chapter1_go_back");
+
+  return currentIndex >= startIndex && currentIndex <= endIndex;
+}
+
+function isChapter1ReturnMealScene(sceneId = currentSceneId) {
+  const currentIndex = sceneOrderIndex(sceneId);
+  const startIndex = sceneOrderIndex("chapter1_ramen");
+  const endIndex = sceneOrderIndex("chapter1_quiet_meal");
+
+  return currentIndex >= startIndex && currentIndex <= endIndex;
+}
+
 function progressionCharacterTuning(characterId) {
   if (!currentSceneId.startsWith("chapter1_")) {
     return null;
+  }
+
+  if (
+    isAtOrAfterScene("chapter1_go_back") &&
+    !isAtOrAfterScene("chapter1_comm_check") &&
+    characterId === "bina"
+  ) {
+    return {
+      stageX: 42,
+      stageY: 63,
+      stageSize: 15.3,
+      stageScaleX: 100,
+      stageScaleY: 100,
+      stageFlipX: true,
+      portraitX: 48,
+      portraitY: 23,
+      portraitZoom: 170
+    };
+  }
+
+  if (
+    isAtOrAfterScene("chapter1_go_back") &&
+    !isAtOrAfterScene("chapter1_comm_check") &&
+    characterId === "pyong"
+  ) {
+    return {
+      stageX: 58,
+      stageY: 63,
+      stageSize: 13.5,
+      stageScaleX: 95,
+      stageScaleY: 103,
+      stageFlipX: false,
+      portraitX: 50,
+      portraitY: 11,
+      portraitZoom: 170
+    };
+  }
+
+  if (isChapter1ReturnMealScene() && characterId === "cupramuenBina") {
+    return {
+      stageX: 47,
+      stageY: 63,
+      stageSize: 4,
+      stageScaleX: 100,
+      stageScaleY: 100,
+      stageFlipX: false,
+      portraitX: 50,
+      portraitY: 25,
+      portraitZoom: 170
+    };
+  }
+
+  if (isChapter1ReturnMealScene() && characterId === "cupramuenPyong") {
+    return {
+      stageX: 53,
+      stageY: 63,
+      stageSize: 4,
+      stageScaleX: 100,
+      stageScaleY: 100,
+      stageFlipX: false,
+      portraitX: 50,
+      portraitY: 25,
+      portraitZoom: 170
+    };
+  }
+
+  if (isChapter1OutdoorTripScene() && characterId === "bina") {
+    return {
+      stageX: 42,
+      stageY: 63,
+      stageSize: 15.3,
+      stageScaleX: 100,
+      stageScaleY: 100,
+      stageFlipX: true,
+      portraitX: 48,
+      portraitY: 23,
+      portraitZoom: 170
+    };
+  }
+
+  if (isChapter1OutdoorTripScene() && characterId === "pyong") {
+    return {
+      stageX: 58,
+      stageY: 63,
+      stageSize: 13.5,
+      stageScaleX: 95,
+      stageScaleY: 103,
+      stageFlipX: false,
+      portraitX: 50,
+      portraitY: 11,
+      portraitZoom: 170
+    };
+  }
+
+  if (
+    currentStageName === "roomMorning" &&
+    stageCharacterTunings.roomMorning?.[characterId] &&
+    (!currentSceneId.startsWith("chapter1_") || isAtOrAfterScene("chapter1_back_to_room"))
+  ) {
+    return stageCharacterTunings.roomMorning[characterId];
+  }
+
+  if (
+    characterId === "bina" &&
+    isAtOrAfterScene("chapter1_fridge_empty") &&
+    !isAtOrAfterScene("chapter1_hoodie")
+  ) {
+    return {
+      stageX: 69,
+      stageY: 36,
+      stageSize: 15.3,
+      stageScaleX: 100,
+      stageScaleY: 100,
+      stageFlipX: false,
+      portraitX: 48,
+      portraitY: 23,
+      portraitZoom: 170
+    };
+  }
+
+  if (
+    characterId === "bina" &&
+    isAtOrAfterScene("chapter1_hoodie") &&
+    !isAtOrAfterScene("chapter1_store_trip")
+  ) {
+    return {
+      stageX: 31,
+      stageY: 36,
+      stageSize: 15.3,
+      stageScaleX: 100,
+      stageScaleY: 100,
+      stageFlipX: true,
+      portraitX: 48,
+      portraitY: 23,
+      portraitZoom: 170
+    };
   }
 
   if (characterId === "bina" && isAtOrAfterScene("chapter1_keyboard_laugh")) {
@@ -1058,7 +1359,7 @@ function applyCharacterTuning(characterId) {
   document.documentElement.style.setProperty("--stage-character-size", `${values.stageSize}%`);
   document.documentElement.style.setProperty(
     "--stage-character-scale-x",
-    values.stageScaleX / 100
+    (values.stageScaleX / 100) * (values.stageFlipX ? -1 : 1)
   );
   document.documentElement.style.setProperty(
     "--stage-character-scale-y",
@@ -1083,6 +1384,24 @@ function isChapter1CupRamenVisible() {
 }
 
 function actorEntranceAnimation(actorId) {
+  if (currentSceneId === "chapter1_fridge_empty" && actorId === "bina") {
+    return {
+      fromX: 40,
+      fromY: 63.7,
+      duration: 2000,
+      hops: 3
+    };
+  }
+
+  if (currentSceneId === "chapter1_hoodie" && actorId === "bina") {
+    return {
+      fromX: 69,
+      fromY: 36,
+      duration: 2000,
+      hops: 3
+    };
+  }
+
   if (currentSceneId !== "chapter1_fun" || actorId !== "pyong") {
     return null;
   }
@@ -1094,16 +1413,82 @@ function actorEntranceAnimation(actorId) {
   };
 }
 
+function actorEntranceKeyframes(entrance, values, scaleX, scaleY, directionX) {
+  const transform = `translate(-50%, -50%) scale(${scaleX * directionX}, ${scaleY})`;
+  const hopCount = entrance.hops ?? 1;
+
+  if (hopCount <= 1) {
+    return [
+      {
+        left: `${entrance.fromX}%`,
+        top: `${entrance.fromY}%`,
+        transform
+      },
+      {
+        left: `${(entrance.fromX + values.stageX) / 2}%`,
+        top: `${Math.min(entrance.fromY, values.stageY) - 7}%`,
+        transform
+      },
+      {
+        left: `${values.stageX}%`,
+        top: `${values.stageY}%`,
+        transform
+      }
+    ];
+  }
+
+  const keyframes = [
+    {
+      left: `${entrance.fromX}%`,
+      top: `${entrance.fromY}%`,
+      transform,
+      offset: 0
+    }
+  ];
+
+  for (let index = 1; index <= hopCount; index += 1) {
+    const segmentStart = (index - 1) / hopCount;
+    const segmentEnd = index / hopCount;
+    const startX = entrance.fromX + (values.stageX - entrance.fromX) * segmentStart;
+    const startY = entrance.fromY + (values.stageY - entrance.fromY) * segmentStart;
+    const endX = entrance.fromX + (values.stageX - entrance.fromX) * segmentEnd;
+    const endY = entrance.fromY + (values.stageY - entrance.fromY) * segmentEnd;
+
+    keyframes.push(
+      {
+        left: `${(startX + endX) / 2}%`,
+        top: `${Math.min(startY, endY) - 5}%`,
+        transform,
+        offset: segmentStart + (segmentEnd - segmentStart) * 0.48
+      },
+      {
+        left: `${endX}%`,
+        top: `${endY}%`,
+        transform,
+        offset: segmentEnd
+      }
+    );
+  }
+
+  return keyframes;
+}
+
 function shouldFlipStageActor(actorId) {
   if (actorId === "pyong" && currentStageName === "alien") {
     return true;
   }
 
   if (actorId === "bina" && currentSceneId.startsWith("chapter1_")) {
-    return isAtOrAfterScene("chapter1_keyboard_laugh");
+    return !isAtOrAfterScene("chapter1_keyboard_laugh");
   }
 
   return false;
+}
+
+function stageActorFlipMultiplier(actorId, values) {
+  const debugFlip = values.stageFlipX ? -1 : 1;
+  const sceneFlip = shouldFlipStageActor(actorId) ? -1 : 1;
+  return debugFlip * sceneFlip;
 }
 
 function actorIdsForScene(scene) {
@@ -1115,8 +1500,20 @@ function actorIdsForScene(scene) {
     return scene.actors;
   }
 
+  if (isSystemScene(scene)) {
+    return [];
+  }
+
   if (scene.stage === "alien") {
     return ["bina", "starshipOpen", "pyong"];
+  }
+
+  if (isChapter1OutdoorTripScene()) {
+    return ["bina", "pyong"];
+  }
+
+  if (isChapter1ReturnMealScene()) {
+    return ["bina", "pyong", "cupramuenBina", "cupramuenPyong"];
   }
 
   if (scene.stage?.startsWith("room") && currentSceneId.startsWith("chapter1_")) {
@@ -1145,8 +1542,7 @@ function renderStageActors(actorIds = []) {
     const actor = document.createElement("img");
     const scaleX = values.stageScaleX / 100;
     const scaleY = values.stageScaleY / 100;
-    const shouldFlip = shouldFlipStageActor(actorId);
-    const directionX = shouldFlip ? -1 : 1;
+    const directionX = stageActorFlipMultiplier(actorId, values);
 
     actor.className = "stage-actor";
     actor.src = character.sprite;
@@ -1161,23 +1557,7 @@ function renderStageActors(actorIds = []) {
     const entrance = actorEntranceAnimation(actorId);
     if (entrance) {
       actor.animate(
-        [
-          {
-            left: `${entrance.fromX}%`,
-            top: `${entrance.fromY}%`,
-            transform: `translate(-50%, -50%) scale(${scaleX * directionX}, ${scaleY})`
-          },
-          {
-            left: `${(entrance.fromX + values.stageX) / 2}%`,
-            top: `${Math.min(entrance.fromY, values.stageY) - 7}%`,
-            transform: `translate(-50%, -50%) scale(${scaleX * directionX}, ${scaleY})`
-          },
-          {
-            left: `${values.stageX}%`,
-            top: `${values.stageY}%`,
-            transform: `translate(-50%, -50%) scale(${scaleX * directionX}, ${scaleY})`
-          }
-        ],
+        actorEntranceKeyframes(entrance, values, scaleX, scaleY, directionX),
         {
           duration: entrance.duration,
           easing: "cubic-bezier(0.22, 0.9, 0.24, 1)",
@@ -1313,7 +1693,14 @@ function hideNarrationPanel() {
   narrationText.textContent = "";
   narrationChoices.replaceChildren();
   narrationPrompt?.classList.add("narration-prompt-hidden");
+  hideSystemPanel();
   hideDialogueMode();
+}
+
+function hideSystemPanel() {
+  systemPanel?.classList.add("system-panel-hidden");
+  systemText.textContent = "";
+  systemPrompt?.classList.add("system-prompt-hidden");
 }
 
 function speakerCharacterId(value) {
@@ -1346,8 +1733,12 @@ function isNarrationScene(scene) {
   return scene.type === "narration" || ["나레이션", "프롤로그", "1장", "narration"].includes(scene.speaker);
 }
 
+function isSystemScene(scene) {
+  return scene.type === "system" || ["시스템", "system"].includes(String(scene.speaker ?? "").toLowerCase());
+}
+
 function dialogueCharactersForScene(scene, isNarration) {
-  if (!shouldShowDialogueStanding(scene) || isNarration || scene.hideDialogueActors) {
+  if (!shouldShowDialogueStanding(scene) || isNarration || isSystemScene(scene) || scene.hideDialogueActors) {
     return [];
   }
 
@@ -1359,7 +1750,7 @@ function dialogueCharactersForScene(scene, isNarration) {
 }
 
 function shouldShowDialogueStanding(scene) {
-  if (isNarrationScene(scene) || scene.hideDialogueActors) {
+  if (isNarrationScene(scene) || isSystemScene(scene) || scene.hideDialogueActors) {
     return false;
   }
 
@@ -1377,6 +1768,40 @@ function focusCharacterForScene(scene, isNarration) {
   return scene.focusCharacter ?? speakerCharacterId(scene.speaker) ?? scene.character ?? null;
 }
 
+function dialogueActorPositionForScene(characterId) {
+  const position = dialogueActorPositions[characterId];
+  if (!position) {
+    return null;
+  }
+
+  const scene = story.scenes[currentSceneId];
+  const visibleCharacters = dialogueCharactersForScene(scene, isNarrationScene(scene));
+  const shouldUseChapter1IntroSwap =
+    visibleCharacters.length < 2 &&
+    currentSceneId.startsWith("chapter1_") &&
+    !isAtOrAfterScene("chapter1_keyboard_laugh");
+
+  if (!shouldUseChapter1IntroSwap) {
+    return position;
+  }
+
+  if (characterId === "bina") {
+    return {
+      ...dialogueActorPositions.pyong,
+      flipX: !position.flipX
+    };
+  }
+
+  if (characterId === "pyong") {
+    return {
+      ...dialogueActorPositions.bina,
+      flipX: !position.flipX
+    };
+  }
+
+  return position;
+}
+
 function renderDialogueActors(scene, isNarration) {
   const visibleCharacters = dialogueCharactersForScene(scene, isNarration);
   const focusCharacter = focusCharacterForScene(scene, isNarration);
@@ -1388,7 +1813,7 @@ function renderDialogueActors(scene, isNarration) {
 
   visibleCharacters.forEach((characterId) => {
     const character = characterImagesFor(characterId);
-    const position = dialogueActorPositions[characterId];
+    const position = dialogueActorPositionForScene(characterId);
     if (!character?.dialogueSprite || !position) {
       return;
     }
@@ -1420,19 +1845,59 @@ function hideDialogueMode() {
   stage.classList.remove("stage-dialogue-standing-mode");
 }
 
+function syncChoiceHighlight() {
+  activeChoiceButtons.forEach((button, index) => {
+    button.classList.toggle("choice-active", index === activeChoiceIndex);
+    button.setAttribute("aria-selected", index === activeChoiceIndex ? "true" : "false");
+  });
+}
+
+function moveChoiceSelection(direction) {
+  if (!activeChoiceButtons.length) {
+    return false;
+  }
+
+  activeChoiceIndex = (activeChoiceIndex + direction + activeChoiceButtons.length) % activeChoiceButtons.length;
+  syncChoiceHighlight();
+  return true;
+}
+
+function chooseActiveChoice() {
+  if (!activeChoiceButtons.length) {
+    return false;
+  }
+
+  activeChoiceButtons[activeChoiceIndex].click();
+  return true;
+}
+
 function showSceneChoices(sceneChoices, isCenteredText) {
   const choiceContainer = isCenteredText ? narrationChoices : choices;
+  activeChoiceIndex = 0;
+  activeChoiceButtons = [];
   sceneChoices.forEach((choice) => {
     const button = document.createElement("button");
     button.className = "choice";
     button.type = "button";
     button.textContent = choice.text;
-    button.addEventListener("click", () => {
+    button.setAttribute("role", "option");
+    button.addEventListener("mouseenter", () => {
+      activeChoiceIndex = activeChoiceButtons.indexOf(button);
+      syncChoiceHighlight();
+    });
+    button.addEventListener("focus", () => {
+      activeChoiceIndex = activeChoiceButtons.indexOf(button);
+      syncChoiceHighlight();
+    });
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
       applyStoryEffects(choice.effects);
       renderScene(choice.next);
     });
     choiceContainer.append(button);
+    activeChoiceButtons.push(button);
   });
+  syncChoiceHighlight();
 }
 
 function applyStoryEffects(effects = {}) {
@@ -1454,11 +1919,21 @@ function applyStoryEffects(effects = {}) {
       return;
     }
 
+    if (key === "set") {
+      Object.assign(gameState, value);
+      return;
+    }
+
     if (key in gameState && typeof gameState[key] === "number") {
       const nextValue = gameState[key] + value;
       gameState[key] = ["money", "fatigue", "communicationProgress", "spaceshipProgress", "badEndingFlag"].includes(key)
         ? Math.max(0, nextValue)
         : nextValue;
+      return;
+    }
+
+    if (key in gameState) {
+      gameState[key] = value;
       return;
     }
 
@@ -1468,13 +1943,18 @@ function applyStoryEffects(effects = {}) {
 
 function revealSceneControls(sceneChoices, scene, isCenteredText) {
   showSceneChoices(sceneChoices, isCenteredText);
+  const isSystem = isSystemScene(scene);
   narrationPrompt?.classList.toggle(
     "narration-prompt-hidden",
-    !isCenteredText || sceneChoices.length > 0 || !scene.next
+    !isCenteredText || isSystem || sceneChoices.length > 0 || !scene.next
+  );
+  systemPrompt?.classList.toggle(
+    "system-prompt-hidden",
+    !isSystem || sceneChoices.length > 0 || !scene.next
   );
   advancePrompt.classList.toggle(
     "advance-prompt-hidden",
-    isCenteredText || sceneChoices.length > 0 || !scene.next
+    isCenteredText || isSystem || sceneChoices.length > 0 || !scene.next
   );
   scheduleAutoAdvance(sceneChoices, scene);
 }
@@ -1584,9 +2064,9 @@ function scheduleWalkScene(locationId) {
   };
 }
 
-function startScheduleMode(logMessage = "2일차부터는 방에서 하루를 시작한다.") {
-  if (gameState.day < 2) {
-    gameState.day = 2;
+function startScheduleMode(logMessage = "3일차부터는 방에서 하루를 시작한다.") {
+  if (gameState.day < 3) {
+    gameState.day = 3;
     gameState.timeSlot = "morning";
     currentScheduleLocationId = "room";
   }
@@ -1935,7 +2415,7 @@ function renderEndingResult() {
   refreshSchedulePanel(`엔딩: ${ending.title}`, "30일이 끝났다. 누적된 선택과 부품 상태에 따라 엔딩이 결정됐다.");
   scheduleTitle.textContent = `엔딩: ${ending.title}`;
   setScheduleButtons([
-    { text: "2일차부터 다시", onClick: resetScheduleMode },
+    { text: "3일차부터 다시", onClick: resetScheduleMode },
     { text: "처음부터 다시", onClick: () => jumpToScene(story.start) }
   ]);
   setScheduleLog(`도달 엔딩: ${ending.title}\n돈 ${gameState.money.toLocaleString("ko-KR")}원 / 교신장치 ${gameState.communicationProgress}% / 우주선 ${gameState.spaceshipProgress}%\n특수 부품: ${specialPartsLabel()}`);
@@ -1943,10 +2423,10 @@ function renderEndingResult() {
 
 function resetScheduleMode() {
   gameState = cloneScheduleState();
-  gameState.day = 2;
+  gameState.day = 3;
   gameState.timeSlot = "morning";
   currentScheduleLocationId = "room";
-  startScheduleFieldMode("room", "2일차 아침으로 돌아왔다.");
+  startScheduleFieldMode("room", "3일차 아침으로 돌아왔다.");
 }
 
 function renderScene(sceneId, options = {}) {
@@ -1954,6 +2434,7 @@ function renderScene(sceneId, options = {}) {
   clearTyping();
   clearAutoAdvance();
   hideDialogueMode();
+  hideSystemPanel();
   schedulePanel.classList.add("schedule-panel-hidden");
   scheduleMiniHud.classList.add("schedule-mini-hud-hidden");
   isScheduleMode = false;
@@ -1963,10 +2444,14 @@ function renderScene(sceneId, options = {}) {
     sceneHistory.push(currentSceneId);
   }
   currentSceneId = sceneId;
+  if (scene.effects) {
+    applyStoryEffects(scene.effects);
+  }
   syncSceneImageControls();
   setStage(scene.stage);
   applySceneCamera(scene);
   triggerSceneShake(scene);
+  applySleepWipe(scene);
 
   if (scene.video) {
     hideNarrationPanel();
@@ -1986,17 +2471,23 @@ function renderScene(sceneId, options = {}) {
     return;
   }
 
+  const isSystem = isSystemScene(scene);
   const isNarration = isNarrationScene(scene);
-  const isCenteredText = isNarration;
+  const isCenteredText = isNarration && !isSystem;
   choices.replaceChildren();
   narrationChoices.replaceChildren();
+  activeChoiceIndex = 0;
+  activeChoiceButtons = [];
   narrationPanel.classList.toggle("narration-panel-hidden", !isCenteredText);
+  systemPanel?.classList.toggle("system-panel-hidden", !isSystem);
   narrationPrompt?.classList.add("narration-prompt-hidden");
+  systemPrompt?.classList.add("system-prompt-hidden");
   narrationText.textContent = "";
-  hud.classList.toggle("hud-hidden", isCenteredText);
+  systemText.textContent = "";
+  hud.classList.toggle("hud-hidden", isCenteredText || isSystem);
 
   speaker.textContent = isCenteredText ? "" : speakerDisplayName(scene.speaker);
-  speaker.hidden = isCenteredText;
+  speaker.hidden = isCenteredText || isSystem;
   dialogue.textContent = "";
 
   renderStageActors(actorIdsForScene(scene));
@@ -2007,7 +2498,8 @@ function renderScene(sceneId, options = {}) {
   stageCharacterSheet.classList.remove("stage-character-sheet-visible");
   renderCharacter(scene.character, { renderStageSprite: false });
   advancePrompt.classList.add("advance-prompt-hidden");
-  typeText(isCenteredText ? narrationText : dialogue, scene.text, () => {
+  const textTarget = isSystem ? systemText : isCenteredText ? narrationText : dialogue;
+  typeText(textTarget, scene.text, () => {
     revealSceneControls(sceneChoices, scene, isCenteredText);
   });
 }
@@ -2628,22 +3120,22 @@ function setupAreaDebugControls() {
   ["walkBoundLeft", "walkBoundRight", "walkBoundTop", "walkBoundBottom"].forEach((key) => {
     document.querySelector(`#${key}`)?.addEventListener("input", applyWalkDebugControls);
   });
-  debugBlockSelect.addEventListener("change", () => {
+  debugBlockSelect?.addEventListener("change", () => {
     selectedDebugBlockIndex = Number(debugBlockSelect.value);
     syncDebugBlockControls();
     renderDebugAreas();
   });
   [debugBlockX, debugBlockY, debugBlockWidth, debugBlockHeight, debugBlockText, debugBlockNext].forEach((input) => {
-    input.addEventListener("input", applyDebugBlockControls);
+    input?.addEventListener("input", applyDebugBlockControls);
   });
-  addInteractionBlock.addEventListener("click", () => {
+  addInteractionBlock?.addEventListener("click", () => {
     interactionBlocks.push({ x: 45, y: 45, width: 10, height: 10, text: "" });
     selectedDebugBlockIndex = interactionBlocks.length - 1;
     syncDebugBlockControls();
     renderDebugAreas();
     debugOutput.textContent = tuningText();
   });
-  removeInteractionBlock.addEventListener("click", () => {
+  removeInteractionBlock?.addEventListener("click", () => {
     if (interactionBlocks.length <= 0) {
       return;
     }
@@ -2684,6 +3176,18 @@ function triggerSceneShake(scene) {
   window.setTimeout(() => {
     stage.classList.remove("stage-shake");
   }, scene.shake.duration ?? 1000);
+}
+
+function applySleepWipe(scene) {
+  const amount = scene.sleepWipe;
+  if (amount === undefined || amount === null) {
+    sleepWipe?.classList.add("sleep-wipe-hidden");
+    sleepWipe?.style.setProperty("--sleep-wipe-size", "0%");
+    return;
+  }
+
+  sleepWipe?.classList.remove("sleep-wipe-hidden");
+  sleepWipe?.style.setProperty("--sleep-wipe-size", `${amount}%`);
 }
 
 function setupCameraControls(panel, onChange) {
@@ -2761,13 +3265,17 @@ function applyDialogueStandingControls() {
 }
 
 function syncTuningFromCharacter(characterId) {
-  const values = editableCharacterTuning(characterId);
-  ["stageX", "stageY", "stageSize", "stageScaleX", "stageScaleY", "portraitX", "portraitY", "portraitZoom"].forEach(
+  const values = getCharacterTuning(characterId);
+  ["stageX", "stageY", "stageSize", "stageScaleX", "stageScaleY", "stageFlipX", "portraitX", "portraitY", "portraitZoom"].forEach(
     (key) => {
       tuning[key] = values[key];
       const input = document.querySelector(`#${key}`);
       if (input) {
-        input.value = values[key];
+        if (input.type === "checkbox") {
+          input.checked = Boolean(values[key]);
+        } else {
+          input.value = values[key];
+        }
       }
     }
   );
@@ -2775,7 +3283,7 @@ function syncTuningFromCharacter(characterId) {
 
 function syncCharacterFromTuning(characterId) {
   const values = editableCharacterTuning(characterId);
-  ["stageX", "stageY", "stageSize", "stageScaleX", "stageScaleY", "portraitX", "portraitY", "portraitZoom"].forEach(
+  ["stageX", "stageY", "stageSize", "stageScaleX", "stageScaleY", "stageFlipX", "portraitX", "portraitY", "portraitZoom"].forEach(
     (key) => {
       values[key] = tuning[key];
     }
@@ -2784,13 +3292,11 @@ function syncCharacterFromTuning(characterId) {
 
 function tuningText() {
   const characterId = activeDebugCharacterId();
-  const characterValues = editableCharacterTuning(characterId);
+  const characterSource = effectiveCharacterTuningSource(characterId);
+  const characterValues = characterSource.values;
   const dialogueStandingId = activeDialogueStandingId();
   const dialogueStandingValues = dialogueActorPositions[dialogueStandingId];
-  const hasSceneTuning = Boolean(sceneCharacterTunings[currentSceneId]?.[characterId]);
-  const scenePrefix = Object.keys(scenePrefixCharacterTunings).find((prefix) => currentSceneId.startsWith(prefix));
-  const hasScenePrefixTuning = Boolean(scenePrefixCharacterTunings[scenePrefix]?.[characterId]);
-  const tuningName = hasSceneTuning ? currentSceneId : hasScenePrefixTuning ? scenePrefix : editableStageName();
+  const tuningName = characterSource.name;
 
   return [
     `/* ${tuningName} / ${characterId} */`,
@@ -2800,12 +3306,10 @@ function tuningText() {
     `  stageSize: ${characterValues.stageSize},`,
     `  stageScaleX: ${characterValues.stageScaleX},`,
     `  stageScaleY: ${characterValues.stageScaleY},`,
-    `  portraitX: ${characterValues.portraitX},`,
-    `  portraitY: ${characterValues.portraitY},`,
-    `  portraitZoom: ${characterValues.portraitZoom}`,
+    `  stageFlipX: ${Boolean(characterValues.stageFlipX)}`,
     "}",
     "",
-    `/* dialogue standing / ${dialogueStandingId} */`,
+    `/* dialogue image / ${dialogueStandingId} */`,
     `dialogueActorPositions.${dialogueStandingId}: {`,
     `  activeX: ${dialogueStandingValues.activeX},`,
     `  inactiveX: ${dialogueStandingValues.inactiveX},`,
@@ -2834,8 +3338,13 @@ function tuningText() {
   ].join("\n");
 }
 
-function applyTuning() {
-  syncCharacterFromTuning(activeDebugCharacterId());
+function applyTuning(options = {}) {
+  const shouldWriteCharacter = options.writeCharacter ?? true;
+
+  if (shouldWriteCharacter) {
+    syncCharacterFromTuning(activeDebugCharacterId());
+  }
+
   applyDialogueStandingControls();
   applyCharacterTuning(activeDebugCharacterId());
   applyCameraTuning();
@@ -2860,6 +3369,242 @@ function applyTuning() {
   debugOutput.textContent = tuningText();
 }
 
+const debugStageOptions = [
+  ["room", "방 밤"],
+  ["roomMorning", "방 아침"],
+  ["roomAfternoon", "방 점심"],
+  ["roomEvening", "방 저녁"],
+  ["room2", "방 컷신 2"],
+  ["room3", "방 컷신 3"],
+  ["room4", "방 컷신 4"],
+  ["room5", "방 컷신 5"],
+  ["room6", "방 홀로그램 컷신"],
+  ["room7", "방 회로 컷신"],
+  ["room8", "방 잠들기 컷신"],
+  ["room9", "방 세수 컷신"],
+  ["room10", "방 변장 컷신"],
+  ["room11", "방 위장 컷신"],
+  ["roof", "옥상 기본"],
+  ["roof2", "옥상 별/추락"],
+  ["roof3", "옥상 컷신 3"],
+  ["roof4", "옥상 컷신 4"],
+  ["roof5", "옥상 컷신 5"],
+  ["roof6", "옥상 컷신 6"],
+  ["crash", "추락 직후"],
+  ["alien", "뿅뿅 등장"],
+  ["aptMorning", "건물 내부 아침"],
+  ["aptAfternoon", "건물 내부 점심"],
+  ["aptNight", "건물 내부 밤"],
+  ["aptOutside", "건물 밖 아침"],
+  ["withU", "편의점"],
+  ["withU1", "편의점 컷신 1"],
+  ["withU2", "편의점 컷신 2"],
+  ["withU3", "편의점 컷신 3"],
+  ["sanMorning", "뒷산 아침"],
+  ["sanAfternoon", "뒷산 점심"],
+  ["sanNight", "뒷산 밤"]
+];
+
+const debugCharacterOptions = [
+  ["bina", "이빛나"],
+  ["pyong", "뿅뿅"],
+  ["cheolsu", "김철수"],
+  ["cupramuen", "컵라면"],
+  ["starship", "별/우주선"],
+  ["starshipCrash", "추락한 우주선"],
+  ["starshipOpen", "열린 우주선"]
+];
+
+const debugSceneJumpOptions = [
+  ["prologue_title", "프롤로그 시작"],
+  ["room_before_roof", "방 탐색"],
+  ["roof_door", "옥상 입장"],
+  ["roof_star", "별 바라보기"],
+  ["star_moves", "별 이동 컷신"],
+  ["star_grows", "별 확대 컷신"],
+  ["star_frozen", "별 추락 직전"],
+  ["crash_lands", "추락 직후"],
+  ["alien_mic", "뿅뿅 등장"],
+  ["chapter1_title", "1장 시작"],
+  ["chapter1_keyboard_laugh", "1장 줌아웃 이후"],
+  ["chapter1_dream", "1장 잠들기 컷신"],
+  ["chapter1_morning", "1장 아침"],
+  ["chapter1_wash_face", "1장 세수 컷신"],
+  ["chapter1_fridge_empty", "1장 냉장고 이동"],
+  ["chapter1_hoodie", "1장 옷장 이동"],
+  ["chapter1_mask", "1장 변장 컷신"],
+  ["chapter1_mask_fun", "1장 위장 컷신"],
+  ["chapter1_stairs_down", "1장 건물 내부"],
+  ["chapter1_daylight", "1장 건물 밖"],
+  ["chapter1_store_wonder", "1장 편의점 입장"],
+  ["chapter1_manager_spots_bina", "1장 편의점 점장"],
+  ["chapter1_parttime_unlock", "1장 알바 해금"],
+  ["chapter1_go_back", "1장 방으로 귀가"],
+  ["chapter1_keyboard_anxiety", "교신기 선택지"],
+  ["chapter1_repair_tutorial", "수리 튜토리얼 선택지"],
+  ["schedule_start", "3일차 시작"]
+];
+
+function replaceSelectOptions(select, options) {
+  if (!select) {
+    return;
+  }
+
+  const selectedValue = select.value;
+  select.replaceChildren(
+    ...options.map(([value, label]) => {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = label;
+      return option;
+    })
+  );
+
+  if (options.some(([value]) => value === selectedValue)) {
+    select.value = selectedValue;
+  }
+}
+
+function setDebugLabel(inputId, text) {
+  const label = document.querySelector(`#${inputId}`)?.closest("label");
+
+  if (!label) {
+    return;
+  }
+
+  const textNode = [...label.childNodes].find((node) => node.nodeType === Node.TEXT_NODE);
+  if (textNode) {
+    textNode.textContent = `\n          ${text}\n          `;
+  }
+}
+
+function setDebugLabelBySelector(selector, text) {
+  const label = document.querySelector(selector)?.closest("label");
+
+  if (!label) {
+    return;
+  }
+
+  const textNode = [...label.childNodes].find((node) => node.nodeType === Node.TEXT_NODE);
+  if (textNode) {
+    textNode.textContent = `\n          ${text}\n          `;
+  }
+}
+
+function hideDebugControl(inputId) {
+  document.querySelector(`#${inputId}`)?.closest("label")?.classList.add("debug-unused-control");
+}
+
+function insertDebugSectionTitle(beforeElement, title) {
+  if (!beforeElement || beforeElement.previousElementSibling?.dataset?.debugSectionTitle === title) {
+    return;
+  }
+
+  const element = document.createElement("div");
+  element.className = "debug-section-title";
+  element.dataset.debugSectionTitle = title;
+  element.textContent = title;
+  debugPanel.insertBefore(element, beforeElement);
+}
+
+function ensureDebugSceneJumpControls() {
+  if (document.querySelector("#debugSceneJump")) {
+    return;
+  }
+
+  const section = document.createElement("div");
+  section.className = "debug-section debug-scene-jump-section";
+
+  const title = document.createElement("div");
+  title.className = "debug-section-title";
+  title.textContent = "장면 이동";
+
+  const label = document.createElement("label");
+  label.textContent = "바로가기";
+
+  const select = document.createElement("select");
+  select.id = "debugSceneJump";
+  replaceSelectOptions(select, debugSceneJumpOptions);
+  label.append(select);
+
+  const actions = document.createElement("div");
+  actions.className = "debug-actions debug-actions-single";
+
+  const button = document.createElement("button");
+  button.type = "button";
+  button.id = "debugSceneJumpButton";
+  button.textContent = "이동";
+  actions.append(button);
+
+  section.append(title, label, actions);
+  const firstControl = debugCharacterStage?.closest("label") ?? debugPanel.firstElementChild?.nextElementSibling;
+  debugPanel.insertBefore(section, firstControl);
+}
+
+function refreshStageJumpTabs() {
+  stageJumpTabs?.replaceChildren();
+}
+
+function prepareDebugPanelUi() {
+  ensureDebugSceneJumpControls();
+  refreshStageJumpTabs();
+  replaceSelectOptions(debugCharacterStage, debugStageOptions);
+  replaceSelectOptions(debugCharacter, debugCharacterOptions);
+  debugCharacterStage.value = currentStageName;
+  debugCharacter.value = "bina";
+
+  insertDebugSectionTitle(debugCharacterStage?.closest("label"), "맵 / 오브젝트 배치");
+  insertDebugSectionTitle(document.querySelector("#dialogueOpacity")?.closest("label"), "대화창 / A키");
+  insertDebugSectionTitle(document.querySelector("#dialogueActiveX")?.closest("label"), "대화 이미지");
+  insertDebugSectionTitle(document.querySelector("[data-camera-field='cameraX']")?.closest("label"), "카메라");
+  insertDebugSectionTitle(debugAreasVisible?.closest("label"), "이동 / 상호작용 영역");
+
+  setDebugLabel("debugCharacterStage", "조절 맵");
+  setDebugLabel("stageX", "스테이지 X");
+  setDebugLabel("stageY", "스테이지 Y");
+  setDebugLabel("stageSize", "스테이지 크기");
+  setDebugLabel("stageScaleX", "가로 비율");
+  setDebugLabel("stageScaleY", "세로 비율");
+  setDebugLabel("stageFlipX", "좌우 반전");
+  setDebugLabel("debugCharacter", "조절 대상");
+  setDebugLabel("dialogueOpacity", "대화창 불투명도");
+  setDebugLabel("dialogueWidth", "대화창 너비");
+  setDebugLabel("dialogueHeight", "대화창 높이");
+  setDebugLabel("dialoguePadding", "대화창 여백");
+  setDebugLabel("dialogueX", "대화창 X");
+  setDebugLabel("dialogueY", "대화창 Y");
+  setDebugLabel("advancePromptX", "A키 X");
+  setDebugLabel("advancePromptY", "A키 Y");
+  setDebugLabel("advancePromptSize", "A키 크기");
+  setDebugLabel("dialogueActiveX", "활성 X");
+  setDebugLabel("dialogueInactiveX", "비활성 X");
+  setDebugLabel("dialogueStandingY", "대화 이미지 Y");
+  setDebugLabel("dialogueStandingSize", "대화 이미지 크기");
+  setDebugLabel("dialogueFocusScale", "강조 확대");
+  setDebugLabel("dialogueMutedScale", "비활성 축소");
+  setDebugLabel("dialogueFlipX", "좌우 반전");
+  setDebugLabelBySelector("[data-camera-field='cameraX']", "카메라 X");
+  setDebugLabelBySelector("[data-camera-field='cameraY']", "카메라 Y");
+  setDebugLabelBySelector("[data-camera-field='cameraZoom']", "카메라 줌");
+  setDebugLabelBySelector("[data-camera-field='cameraDuration']", "카메라 이동 시간");
+  setDebugLabel("debugAreasVisible", "영역 표시");
+  setDebugLabel("walkBoundLeft", "이동 가능 Left");
+  setDebugLabel("walkBoundRight", "이동 가능 Right");
+  setDebugLabel("walkBoundTop", "이동 가능 Top");
+  setDebugLabel("walkBoundBottom", "이동 가능 Bottom");
+  setDebugLabel("debugBlockSelect", "상호작용 블록");
+  setDebugLabel("debugBlockX", "블록 X");
+  setDebugLabel("debugBlockY", "블록 Y");
+  setDebugLabel("debugBlockWidth", "블록 W");
+  setDebugLabel("debugBlockHeight", "블록 H");
+  setDebugLabel("debugBlockText", "블록 대사");
+  setDebugLabel("debugBlockNext", "블록 이동 장면");
+
+  hideDebugControl("portraitX");
+  hideDebugControl("portraitY");
+  hideDebugControl("portraitZoom");
+}
+
 function setupDebugPanel() {
   const params = new URLSearchParams(window.location.search);
   const isDebug = params.get("debug") === "1";
@@ -2868,32 +3613,48 @@ function setupDebugPanel() {
     return;
   }
 
+  prepareDebugPanelUi();
   debugPanel.classList.add("debug-panel-visible");
   debugPanel.classList.add("debug-panel-collapsed");
-  stageJumpTabs.classList.add("stage-jump-tabs-visible");
-  debugCharacterStage.value = currentStageName;
-  debugCharacter.value = "bina";
   syncTuningFromCharacter(activeDebugCharacterId());
   setupCameraControls(debugPanel, applyTuning);
+
+  document.querySelector("#debugSceneJumpButton")?.addEventListener("click", () => {
+    const sceneId = document.querySelector("#debugSceneJump")?.value;
+    if (sceneId) {
+      jumpToScene(sceneId);
+    }
+  });
 
   debugCharacterStage.addEventListener("change", () => {
     syncTuningFromCharacter(activeDebugCharacterId());
     syncWalkDebugControls();
-    applyTuning();
+    applyTuning({ writeCharacter: false });
   });
 
   debugCharacter.addEventListener("change", () => {
     syncTuningFromCharacter(activeDebugCharacterId());
     syncDialogueStandingControls();
     syncSceneImageControls();
-    applyTuning();
+    applyTuning({ writeCharacter: false });
   });
 
   Object.keys(tuning).forEach((key) => {
     const input = document.querySelector(`#${key}`);
-    input.value = tuning[key];
+    if (!input) {
+      return;
+    }
+    if (input.type === "checkbox") {
+      input.checked = Boolean(tuning[key]);
+    } else {
+      input.value = tuning[key];
+    }
     input.addEventListener("input", () => {
-      tuning[key] = Number(input.value);
+      tuning[key] = input.type === "checkbox" ? input.checked : Number(input.value);
+      applyTuning();
+    });
+    input.addEventListener("change", () => {
+      tuning[key] = input.type === "checkbox" ? input.checked : Number(input.value);
       applyTuning();
     });
   });
@@ -2940,7 +3701,7 @@ function setupDebugPanel() {
   });
 
   syncDialogueStandingControls();
-  applyTuning();
+  applyTuning({ writeCharacter: false });
 }
 
 function fillImageSelect(select, type) {
@@ -2982,7 +3743,7 @@ function sceneImageTuningText() {
 }
 
 function syncSceneImageControls() {
-  if (!debugStageSprite || debugStageSprite.options.length === 0) {
+  if (!debugStageSprite || !debugPortraitSprite || debugStageSprite.options.length === 0) {
     return;
   }
 
@@ -2994,6 +3755,10 @@ function syncSceneImageControls() {
 }
 
 function applySceneImageTuning() {
+  if (!debugStageSprite || !debugPortraitSprite) {
+    return;
+  }
+
   const images = editableSceneImages(activeDebugCharacterId());
   images.sprite = debugStageSprite.value;
   images.portrait = debugPortraitSprite.value;
@@ -3007,9 +3772,13 @@ function applySceneImageTuning() {
 }
 
 function setupSceneImageControls() {
+  if (!debugStageSprite || !debugPortraitSprite || !dialogueImageControls) {
+    return;
+  }
+
   fillImageSelect(debugStageSprite, "sprite");
   fillImageSelect(debugPortraitSprite, "portrait");
-  dialogueImageControls.classList.add("dialogue-image-controls-visible");
+  dialogueImageControls.classList.remove("dialogue-image-controls-visible");
   syncSceneImageControls();
   debugStageSprite.addEventListener("change", applySceneImageTuning);
   debugPortraitSprite.addEventListener("change", applySceneImageTuning);
@@ -3018,6 +3787,10 @@ function setupSceneImageControls() {
 function setupDraggablePanel(panel) {
   const handle = panel.querySelector("[data-drag-handle]");
   let drag = null;
+
+  if (!handle) {
+    return;
+  }
 
   handle.addEventListener("pointerdown", (event) => {
     if (event.target.closest("button")) {
@@ -3054,6 +3827,7 @@ document.addEventListener("keydown", (event) => {
   const key = event.key.toLowerCase();
   const isAdvanceKey = key === "a" || key === "enter" || key === " ";
   const isNarrationVisible = !narrationPanel.classList.contains("narration-panel-hidden");
+  const isSystemVisible = !systemPanel.classList.contains("system-panel-hidden");
 
   if (!saveModal.classList.contains("save-modal-hidden")) {
     if (key === "escape") {
@@ -3080,7 +3854,27 @@ document.addEventListener("keydown", (event) => {
     }
   }
 
-  if (isNarrationVisible && isAdvanceKey) {
+  if (activeChoiceButtons.length) {
+    if (key === "arrowup") {
+      event.preventDefault();
+      moveChoiceSelection(-1);
+      return;
+    }
+
+    if (key === "arrowdown") {
+      event.preventDefault();
+      moveChoiceSelection(1);
+      return;
+    }
+
+    if (isAdvanceKey) {
+      event.preventDefault();
+      chooseActiveChoice();
+      return;
+    }
+  }
+
+  if ((isNarrationVisible || isSystemVisible) && isAdvanceKey) {
     event.preventDefault();
     heldKeys.clear();
     keyPressOrder.clear();
@@ -3265,6 +4059,7 @@ savePages.addEventListener("click", (event) => {
 dialogue.addEventListener("click", advanceScene);
 advancePrompt.addEventListener("click", advanceScene);
 narrationPanel.addEventListener("click", advanceScene);
+systemPanel.addEventListener("click", advanceScene);
 
 setupDebugPanel();
 setupDraggablePanel(debugPanel);

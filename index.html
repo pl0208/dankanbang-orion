@@ -8,16 +8,7 @@
   </head>
   <body>
     <main class="game-shell" aria-label="단칸방의 오리온 프로토타입">
-      <nav class="stage-jump-tabs" aria-label="스테이지 바로가기">
-        <button type="button" data-jump-scene="prologue_title">프롤로그</button>
-        <button type="button" data-jump-scene="room_before_roof">방</button>
-        <button type="button" data-jump-scene="roof_door">옥상</button>
-        <button type="button" data-jump-scene="star_moves">별 이동</button>
-        <button type="button" data-jump-scene="crash_lands">추락 직후</button>
-        <button type="button" data-jump-scene="alien_mic">뿅뿅 등장</button>
-        <button type="button" data-jump-scene="chapter1_title">1장</button>
-        <button type="button" data-jump-scene="schedule_start">2일차</button>
-      </nav>
+      <nav class="stage-jump-tabs" aria-label="스테이지 바로가기"></nav>
 
       <section class="title-screen" id="titleScreen" aria-label="메인 화면">
         <div class="title-canvas">
@@ -120,6 +111,11 @@
         </div>
       </div>
 
+      <div class="sleep-wipe sleep-wipe-hidden" id="sleepWipe" aria-hidden="true">
+        <div class="sleep-wipe-top"></div>
+        <div class="sleep-wipe-bottom"></div>
+      </div>
+
       <section class="schedule-mini-hud schedule-mini-hud-hidden" id="scheduleMiniHud" aria-label="일정 상태">
         <span id="miniDay">2일차</span>
         <span id="miniTimeSlot">아침</span>
@@ -156,6 +152,23 @@
       </section>
 
       <div class="dialogue-actors dialogue-actors-hidden" id="dialogueActors" aria-hidden="true"></div>
+
+      <section class="system-panel system-panel-hidden" id="systemPanel" aria-label="system message">
+        <strong class="system-title">SYSTEM</strong>
+        <p class="system-text" id="systemText"></p>
+        <div class="system-prompt" id="systemPrompt" aria-hidden="true">
+          <img
+            class="advance-prompt-frame advance-prompt-a"
+            src="./assets/images/ui/a-key-1.png"
+            alt=""
+          />
+          <img
+            class="advance-prompt-frame advance-prompt-b"
+            src="./assets/images/ui/a-key-2.png"
+            alt=""
+          />
+        </div>
+      </section>
 
       <section class="schedule-panel schedule-panel-hidden" id="schedulePanel" aria-label="30일 일정 관리">
         <div class="schedule-header">
@@ -213,6 +226,24 @@
         <label>
           조절 맵
           <select class="debug-stage-select" id="debugCharacterStage">
+            <option value="roomMorning">방 아침</option>
+            <option value="roomAfternoon">방 점심</option>
+            <option value="roomEvening">방 저녁</option>
+            <option value="room6">방 컷신 6</option>
+            <option value="room7">방 컷신 7</option>
+            <option value="room8">방 잠들기 컷신</option>
+            <option value="room9">방 세수 컷신</option>
+            <option value="roof3">옥상 컷신 3</option>
+            <option value="roof4">옥상 컷신 4</option>
+            <option value="roof5">옥상 컷신 5</option>
+            <option value="roof6">옥상 컷신 6</option>
+            <option value="aptMorning">건물 내부 아침</option>
+            <option value="aptAfternoon">건물 내부 점심</option>
+            <option value="aptNight">건물 내부 밤</option>
+            <option value="withU">편의점</option>
+            <option value="sanMorning">뒷산 아침</option>
+            <option value="sanAfternoon">뒷산 점심</option>
+            <option value="sanNight">뒷산 밤</option>
             <option value="room">방안</option>
             <option value="room2">방 컷신 2</option>
             <option value="room3">방 컷신 3</option>
@@ -244,6 +275,10 @@
         <label>
           캐릭터 세로 비율
           <input id="stageScaleY" type="range" min="40" max="220" value="100" step="1" />
+        </label>
+        <label>
+          Stage Flip X
+          <input id="stageFlipX" type="checkbox" />
         </label>
 
         <label>

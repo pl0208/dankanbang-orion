@@ -486,7 +486,7 @@ const story = {
     },
     day1_system_record: {
       speaker: "나레이션",
-      text: "1일차가 종료되었습니다. 이빛나는 옥탑방 옥상에서 정체불명의 캡슐을 발견했고, 자칭 뿅뿅과 만났다. 뿅뿅은 이빛나를 꺼져가는 별이라고 표현했고, 우주선 수리를 도와달라고 요청했다.",
+      text: "1일차가 종료되었습니다. 이빛나는 옥탑방 옥상에서 정체불명의 캡슐을 발견했고, 자칭 뿅뿅과 만났다. 뿅뿅은 이빛나를 꺼져가는 별이라고 표현했고, 구조 신호를 보내기 위한 도움을 요청했다.",
       stage: "room",
       actors: ["bina", "pyong"],
       next: "schedule_start"
@@ -877,14 +877,14 @@ const story = {
     },
     alien_details: {
       speaker: "나레이션",
-      text: "은빛 머리카락이 중력을 무시한 채 살랑거렸다. 피부는 희미하게 빛을 내고 있었고, 눈동자는 별처럼 반짝였다.",
+      text: "후드가 달린 초록색 보호복. 초록빛과 검은빛이 섞인 머리. 그리고 머리 위로 튀어나온 안테나 같은 장식.",
       stage: "alien",
       actors: ["bina", "starshipOpen", "pyong"],
       next: "alien_gem"
     },
     alien_gem: {
       speaker: "나레이션",
-      text: "그리고 이마에 박힌 작은 보석은 방금 전 빛나가 올려다보던 별과 똑같은 빛을 내고 있었다.",
+      text: "안테나 끝에서는 작은 빛이 희미하게 깜빡였다. 누가 봐도 평범한 사람은 아니었다. 문제는 그 모습이 무섭다기보다, 이상할 정도로 귀엽다는 점이었다.",
       stage: "alien",
       actors: ["bina", "starshipOpen", "pyong"],
       next: "alien_mic"
@@ -1122,7 +1122,7 @@ const story = {
     pyong_broken_ship: {
       speaker: "뿅뿅",
       character: "pyong",
-      text: "우주선이 망가졌어. 수리해야 해.",
+      text: "통신 장치가 망가졌어. 구조 신호를 보내야 해.",
       stage: "alien",
       next: "bina_repair_why"
     },
@@ -1143,7 +1143,7 @@ const story = {
     bina_repair_me: {
       speaker: "이빛나",
       character: "bina",
-      text: "나? 내가? 우주선을? 미쳤어? 난 내 인생도 제대로 수리 못 하는데?",
+      text: "나? 내가? 외계 교신기를? 미쳤어? 난 내 인생도 제대로 수리 못 하는데?",
       stage: "alien",
       next: "pyong_together"
     },
@@ -1308,7 +1308,7 @@ const story = {
     chapter1_situation: {
       speaker: "이빛나",
       character: "bina",
-      text: "일단 상황 정리 좀 하자. 넌 외계인이고, 우주선이 망가졌고, 내 도움이 필요하다. 맞아?",
+      text: "일단 상황 정리 좀 하자. 넌 외계인이고, 여기 불시착했고, 구조 신호를 보내야 한다. 맞아?",
       stage: "room6",
       actors: [],
       next: "chapter1_yes"
@@ -1324,7 +1324,7 @@ const story = {
     chapter1_unemployed: {
       speaker: "이빛나",
       character: "bina",
-      text: "근데 내가 어떻게 우주선을 고쳐? 나 공대생도 아니고 그냥 백수야.",
+      text: "근데 내가 어떻게 외계 장치를 고쳐? 나 공대생도 아니고 그냥 백수야.",
       stage: "room6",
       actors: [],
       next: "chapter1_what_baeksu"
@@ -1386,14 +1386,14 @@ const story = {
     chapter1_damage_report: {
       speaker: "뿅뿅",
       character: "pyong",
-      text: "내 함선의 손상 보고서야. 보면 알겠지만 핵심 부품 세 개가 망가졌어.",
+      text: "내 함선의 손상 보고서야. 지금 제일 급한 건 통신 링크 모듈이야.",
       stage: "room7",
       actors: [],
       next: "chapter1_parts"
     },
     chapter1_parts: {
       speaker: "나레이션",
-      text: "홀로그램에는 우주선의 구조가 입체적으로 표시되어 있었다. 그리고 빨간색으로 깜빡이는 부분이 세 군데 있었다.",
+      text: "홀로그램에는 복잡한 구조가 떠올랐다. 그중 한 부분만 빨간색으로 깜빡이고 있었다.",
       stage: "room7",
       actors: [],
       next: "chapter1_part_names"
@@ -1401,7 +1401,7 @@ const story = {
     chapter1_part_names: {
       speaker: "뿅뿅",
       character: "pyong",
-      text: "첫 번째, 차원 항법 코어. 두 번째, 에너지 순환 회로. 세 번째, 통신 링크 모듈.",
+      text: "통신 링크 모듈. 쉽게 말하면 구조 신호를 보내는 장치야.",
       stage: "room7",
       actors: [],
       next: "chapter1_korean"
@@ -1417,7 +1417,7 @@ const story = {
     chapter1_simple_parts: {
       speaker: "뿅뿅",
       character: "pyong",
-      text: "음... 첫 번째는 우주선이 어디로 갈지 결정하는 머리, 두 번째는 우주선을 움직이게 하는 심장, 세 번째는 구조 신호를 보내는 입. 이 정도면 돼?",
+      text: "우주선을 완전히 고치는 건 지금은 무리야. 대신 구조 신호를 보내면 누군가 찾으러 올 수 있어. 이 정도면 돼?",
       stage: "room7",
       actors: [],
       next: "chapter1_better"
@@ -1432,7 +1432,7 @@ const story = {
     },
     chapter1_look_hologram: {
       speaker: "나레이션",
-      text: "빛나는 홀로그램을 들여다보았다. 생전 처음 보는 기술이었지만, 이상하게 게임의 인터페이스처럼 직관적으로 느껴졌다.",
+      text: "빛나는 홀로그램을 들여다보았다. 생전 처음 보는 기술이었지만, 이상하게 UI 시안처럼 화면 구조가 눈에 들어왔다.",
       stage: "room7",
       actors: [],
       next: "chapter1_how_fix"
@@ -1440,7 +1440,7 @@ const story = {
     chapter1_how_fix: {
       speaker: "이빛나",
       character: "bina",
-      text: "근데 이걸 어떻게 고쳐? 지구에 차원 항법 코어 같은 거 없거든.",
+      text: "근데 이걸 어떻게 고쳐? 지구에 외계 교신기 부품 같은 거 없거든.",
       stage: "room7",
       actors: [],
       next: "chapter1_temp_fix"
@@ -1464,7 +1464,7 @@ const story = {
     chapter1_replace_parts: {
       speaker: "뿅뿅",
       character: "pyong",
-      text: "응. 완벽히 같은 부품은 없어도, 비슷한 기능을 하는 물질로 대체할 수 있어. 내 기술력이면 지구 물건으로도 어느 정도 호환이 가능하거든.",
+      text: "응. 완벽히 같은 부품은 없어도, 비슷한 기능을 하는 물건으로 임시 연결은 가능해. 특히 입력 회로가 있으면 좋아.",
       stage: "room7",
       actors: [],
       next: "chapter1_keyboard"
@@ -1490,7 +1490,7 @@ const story = {
     chapter1_keyboard_signal: {
       speaker: "뿅뿅",
       character: "pyong",
-      text: "오, 입력 장치! 신호 전달 체계가 있겠네. 저거 쓸 수 있을 것 같아.",
+      text: "오, 입력 장치! 신호 전달 체계가 있겠네. 교신기 수리에 쓸 수 있을지도 몰라.",
       stage: "room",
       actors: [],
       camera: { x: 0, y: 70, zoom: 4.07, duration: 650 },
@@ -1508,7 +1508,7 @@ const story = {
     chapter1_keyboard_good: {
       speaker: "뿅뿅",
       character: "pyong",
-      text: "오히려 좋아. 고장 난 부분의 회로가 노출되어 있으면 작업하기 편하거든.",
+      text: "오히려 좋아. 고장 난 부분의 회로가 노출되어 있으면 확인하기 편하거든. 지금은 위치만 봐둘게.",
       stage: "room",
       actors: [],
       camera: { x: 0, y: 70, zoom: 4.07, duration: 650 },
@@ -1523,14 +1523,14 @@ const story = {
     chapter1_fix_with_keyboard: {
       speaker: "이빛나",
       character: "bina",
-      text: "지금 그 우주선을 내 고장 난 키보드로 고치겠다는 거야?",
+      text: "벌써 내 키보드 노리는 거야?",
       stage: "room",
       next: "chapter1_why_not"
     },
     chapter1_why_not: {
       speaker: "뿅뿅",
       character: "pyong",
-      text: "응. 왜, 안 돼?",
+      text: "응. 가능성 있어 보여.",
       stage: "room",
       next: "chapter1_maybe"
     },
@@ -1614,6 +1614,19 @@ const story = {
       speaker: "나레이션",
       text: "빛나는 침대에 누웠다. 천장을 바라보며 생각했다. 진짜 미쳤다.",
       stage: "room",
+      next: "chapter1_absurd_laugh"
+    },
+    chapter1_absurd_laugh: {
+      speaker: "나레이션",
+      text: "말도 안 되는 하루였다. 그런데 이상하게도, 그 어이없음이 자꾸 웃음으로 새어 나왔다.",
+      stage: "room",
+      next: "chapter1_why_laugh"
+    },
+    chapter1_why_laugh: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "빛나, 왜 갑자기 웃어?",
+      stage: "room",
       next: "chapter1_fun_bina"
     },
     chapter1_fun_bina: {
@@ -1647,13 +1660,41 @@ const story = {
     chapter1_dream: {
       speaker: "나레이션",
       text: "빛나는 눈을 감았다. 내일 일어나면 이게 다 꿈이겠지. 하지만 어쩐지, 꿈이 아니었으면 좋겠다는 생각도 들었다.",
-      stage: "room",
+      stage: "room8",
+      actors: [],
+      next: "chapter1_sleep_line_1"
+    },
+    chapter1_sleep_line_1: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "엉망진창인 하루였어.",
+      stage: "room8",
+      actors: [],
+      sleepWipe: 16,
+      next: "chapter1_sleep_line_2"
+    },
+    chapter1_sleep_line_2: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "다 꿈이겠지만... 꿈이 아니었으면...",
+      stage: "room8",
+      actors: [],
+      sleepWipe: 32,
+      next: "chapter1_sleep_line_3"
+    },
+    chapter1_sleep_line_3: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "좋겠... 다...",
+      stage: "room8",
+      actors: [],
+      sleepWipe: 50,
       next: "chapter1_morning"
     },
     chapter1_morning: {
       speaker: "나레이션",
       text: "아침 햇살이 창문을 통해 들어왔다. 빛나는 눈을 떴다. 익숙한 천장. 익숙한 벽지. 익숙한 라면 냄새.",
-      stage: "room",
+      stage: "roomMorning",
       next: "chapter1_dream_over"
     },
     chapter1_dream_over: {
@@ -1706,12 +1747,36 @@ const story = {
     chapter1_wash_face: {
       speaker: "나레이션",
       text: "빛나는 세수라도 해야 할 것 같았다. 찬물로 얼굴을 씻고 거울을 보았다.",
-      stage: "room",
+      stage: "room9",
+      actors: [],
       next: "chapter1_mirror"
     },
     chapter1_mirror: {
       speaker: "나레이션",
       text: "거울에 비친 얼굴은 평소와 같았다. 다크서클이 짙고, 피부가 푸석푸석하고, 생기라곤 찾아볼 수 없는 얼굴.",
+      stage: "room9",
+      actors: [],
+      next: "chapter1_mirror_reality_1"
+    },
+    chapter1_mirror_reality_1: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "정말... 꿈이 아니구나.",
+      stage: "room9",
+      actors: [],
+      next: "chapter1_mirror_reality_2"
+    },
+    chapter1_mirror_reality_2: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "그럼 어젯밤 일도, 저 외계인도... 전부 진짜라는 거네.",
+      stage: "room9",
+      actors: [],
+      next: "chapter1_back_to_room"
+    },
+    chapter1_back_to_room: {
+      speaker: "나레이션",
+      text: "빛나는 젖은 얼굴을 대충 닦고 방으로 돌아왔다. 익숙한 좁은 공간이, 어제와는 조금 다르게 느껴졌다.",
       stage: "room",
       next: "chapter1_portfolio_file"
     },
@@ -1911,232 +1976,359 @@ const story = {
     },
     chapter1_hoodie: {
       speaker: "나레이션",
-      text: "빛나는 옷장을 열었다. 오래된 옷들 중에서 후드티와 청바지를 꺼냈다.",
+      text: "빛나는 옷장을 뒤적였다. 하지만 뿅뿅에게 제대로 맞는 옷은 없었다. 애초에 문제는 사이즈가 아니었다.",
       stage: "room",
       next: "chapter1_wear_this"
     },
     chapter1_wear_this: {
       speaker: "이빛나",
       character: "bina",
-      text: "이거 입어.",
+      text: "초록색 보호복에, 머리 위 안테나에, 끝에서 반짝거리는 빛까지... 이걸 어떻게 숨겨.",
       stage: "room",
       next: "chapter1_earth_clothes"
     },
     chapter1_earth_clothes: {
       speaker: "뿅뿅",
       character: "pyong",
-      text: "이게 지구 의상이야? 촉감이 이상해. 폭신폭신하면서 까끌까끌해.",
+      text: "숨겨야 해? 귀엽잖아.",
       stage: "room",
       next: "chapter1_just_wear"
     },
     chapter1_just_wear: {
       speaker: "이빛나",
       character: "bina",
-      text: "면이야. 그냥 입어.",
+      text: "귀엽긴 한데 편의점 가면 바로 신고당해.",
       stage: "room",
       next: "chapter1_mask"
     },
     chapter1_mask: {
       speaker: "나레이션",
-      text: "후드를 쓰자 은빛 머리카락이 어느 정도 가려졌다. 하지만 여전히 빛나는 피부와 이마의 보석은 문제였다.",
-      stage: "room",
+      text: "결국 빛나는 커다란 후드 집업과 마스크를 가져왔다. 초록 보호복 위에 억지로 덧입히자 수상함이 조금 줄어들었다.",
+      stage: "room10",
+      actors: [],
       next: "chapter1_mask_line"
     },
     chapter1_mask_line: {
       speaker: "이빛나",
       character: "bina",
-      text: "마스크도 써야겠다.",
-      stage: "room",
+      text: "...정말 아주 조금.",
+      stage: "room10",
+      actors: [],
       next: "chapter1_humanish"
     },
     chapter1_humanish: {
       speaker: "나레이션",
-      text: "뿅뿅에게 마스크를 씌워주고 나서 보니, 어느 정도는 사람처럼 보였다. 이상하게 예쁜 사람.",
-      stage: "room",
+      text: "마스크 아래로도 안테나 끝의 작은 빛이 희미하게 보였다. 사람처럼 보인다기보다는, 이상하게 완성도 높은 외계인 코스튬 같았다.",
+      stage: "room10",
+      actors: [],
       next: "chapter1_mask_fun"
     },
     chapter1_mask_fun: {
       speaker: "뿅뿅",
       character: "pyong",
-      text: "오, 이거 신기해! 얼굴에 뭔가 붙어 있는 느낌이야!",
-      stage: "room",
+      text: "오, 지구 위장 장비! 얼굴에 뭔가 붙어 있는 느낌이야!",
+      stage: "room11",
+      actors: [],
       next: "chapter1_quiet"
     },
     chapter1_quiet: {
       speaker: "이빛나",
       character: "bina",
-      text: "시끄럽게 굴지 마. 나가면.",
-      stage: "room",
+      text: "나가면 조용히 해. 말하면 바로 안 들킬 것도 들킬 것 같으니까.",
+      stage: "room11",
+      actors: [],
       next: "chapter1_store_trip"
     },
     chapter1_store_trip: {
       speaker: "나레이션",
       text: "빛나는 열쇠와 지갑을 챙겼다. 지갑 안에는 만 원짜리 한 장과 천 원짜리 몇 장이 전부였다.",
-      stage: "room",
+      stage: "room11",
+      actors: [],
       next: "chapter1_stairs_down"
     },
     chapter1_stairs_down: {
       speaker: "나레이션",
       text: "문을 열고 밖으로 나왔다. 낡은 복도, 페인트가 벗겨진 벽, 형광등 하나가 깜빡이고 있었다.",
-      stage: "room",
+      stage: "aptMorning",
       next: "chapter1_building"
     },
     chapter1_building: {
       speaker: "뿅뿅",
       character: "pyong",
       text: "여기가 네 건물이야?",
-      stage: "room",
+      stage: "aptMorning",
       next: "chapter1_rooftop_room"
     },
     chapter1_rooftop_room: {
       speaker: "이빛나",
       character: "bina",
       text: "응. 옥탑방. 건물 맨 위에 있는 방. 제일 싸.",
-      stage: "room",
+      stage: "aptMorning",
       next: "chapter1_daylight"
     },
     chapter1_daylight: {
       speaker: "나레이션",
       text: "밖으로 나오자 햇빛이 눈부셨다. 빛나는 눈을 찡그렸다. 요즘은 낮에 밖에 나오는 일이 거의 없었다.",
-      stage: "room",
+      stage: "aptOutside",
       next: "chapter1_sunlight"
     },
     chapter1_sunlight: {
       speaker: "뿅뿅",
       character: "pyong",
       text: "와, 밝다! 좋아좋아, 햇빛 좋아!",
-      stage: "room",
+      stage: "aptOutside",
       next: "chapter1_people_watch"
     },
     chapter1_people_watch: {
       speaker: "이빛나",
       character: "bina",
       text: "조용히 해. 사람들 봐.",
-      stage: "room",
+      stage: "aptOutside",
       next: "chapter1_short_walk"
     },
     chapter1_short_walk: {
       speaker: "나레이션",
       text: "편의점까지 오 분 거리. 평소에는 마라톤처럼 느껴지던 거리였는데, 오늘은 이상하게 짧게 느껴졌다.",
-      stage: "room",
+      stage: "aptOutside",
       next: "chapter1_store_wonder"
     },
     chapter1_store_wonder: {
       speaker: "뿅뿅",
       character: "pyong",
       text: "여기가 편의점? 물건이 엄청 많아!",
-      stage: "room",
+      stage: "withU",
       next: "chapter1_questions"
     },
     chapter1_questions: {
       speaker: "뿅뿅",
       character: "pyong",
       text: "이건 뭐야?",
-      stage: "room",
+      stage: "withU1",
+      actors: [],
       next: "chapter1_snack"
     },
     chapter1_snack: {
       speaker: "이빛나",
       character: "bina",
       text: "과자. 간식이야.",
-      stage: "room",
+      stage: "withU1",
+      actors: [],
       next: "chapter1_more_questions"
     },
     chapter1_more_questions: {
       speaker: "뿅뿅",
       character: "pyong",
       text: "이건?",
-      stage: "room",
+      stage: "withU2",
+      actors: [],
       next: "chapter1_drink"
     },
     chapter1_drink: {
       speaker: "이빛나",
       character: "bina",
       text: "음료수.",
-      stage: "room",
+      stage: "withU2",
+      actors: [],
       next: "chapter1_stop"
     },
     chapter1_stop: {
       speaker: "이빛나",
       character: "bina",
       text: "...제발 그만해.",
-      stage: "room",
+      stage: "withU2",
+      actors: [],
       next: "chapter1_buy_food"
     },
     chapter1_buy_food: {
       speaker: "나레이션",
       text: "결국 컵라면 두 개와 삼각김밥 두 개를 골랐다. 그게 예산의 한계였다.",
-      stage: "room",
+      stage: "withU",
       next: "chapter1_hotbar"
     },
     chapter1_hotbar: {
       speaker: "뿅뿅",
       character: "pyong",
       text: "빛나, 저건 뭐야? 막대에 뭔가 꽂혀 있어!",
-      stage: "room",
+      stage: "withU",
       next: "chapter1_hotbar_answer"
     },
     chapter1_hotbar_answer: {
       speaker: "이빛나",
       character: "bina",
       text: "그건... 핫바. 고기 같은 거야.",
-      stage: "room",
+      stage: "withU",
       next: "chapter1_want_hotbar"
     },
     chapter1_want_hotbar: {
       speaker: "뿅뿅",
       character: "pyong",
       text: "먹고 싶어!",
-      stage: "room",
+      stage: "withU",
       next: "chapter1_no_money"
     },
     chapter1_no_money: {
       speaker: "이빛나",
       character: "bina",
       text: "안 돼. 돈 없어.",
-      stage: "room",
+      stage: "withU",
       next: "chapter1_money_question"
     },
     chapter1_money_question: {
       speaker: "뿅뿅",
       character: "pyong",
       text: "돈?",
-      stage: "room",
+      stage: "withU",
       next: "chapter1_money_explain"
     },
     chapter1_money_explain: {
       speaker: "이빛나",
       character: "bina",
       text: "이걸로 물건 사는 거야. 이게 없으면 못 사.",
-      stage: "room",
+      stage: "withU",
       next: "chapter1_galaxy_free"
     },
     chapter1_galaxy_free: {
       speaker: "뿅뿅",
       character: "pyong",
       text: "이상하다. 우리 은하에선 필요한 건 그냥 가져가는데.",
-      stage: "room",
+      stage: "withU",
       next: "chapter1_earth_different_store"
     },
     chapter1_earth_different_store: {
       speaker: "이빛나",
       character: "bina",
       text: "여긴 지구야. 다르다고.",
-      stage: "room",
+      stage: "withU",
       next: "chapter1_next_time"
     },
     chapter1_next_time: {
       speaker: "이빛나",
       character: "bina",
       text: "핫바, 다음에 사줄게. 돈 생기면.",
-      stage: "room",
+      stage: "withU",
       next: "chapter1_really"
     },
     chapter1_really: {
       speaker: "뿅뿅",
       character: "pyong",
       text: "정말?",
-      stage: "room",
+      stage: "withU",
+      next: "chapter1_manager_spots_bina"
+    },
+    chapter1_manager_spots_bina: {
+      speaker: "점장",
+      text: "어? 빛나 씨?",
+      stage: "withU3",
+      actors: [],
+      next: "chapter1_manager_greeting"
+    },
+    chapter1_manager_greeting: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "아, 안녕하세요.",
+      stage: "withU3",
+      actors: [],
+      next: "chapter1_manager_shift"
+    },
+    chapter1_manager_shift: {
+      speaker: "점장",
+      text: "오늘 알바 날 아니잖아? 무슨 일 있어?",
+      stage: "withU3",
+      actors: [],
+      next: "chapter1_food_reason"
+    },
+    chapter1_food_reason: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "아... 그냥 먹을 거 좀 사가려고요.",
+      stage: "withU3",
+      actors: [],
+      next: "chapter1_manager_pyong"
+    },
+    chapter1_manager_pyong: {
+      speaker: "나레이션",
+      text: "점장의 시선이 빛나 옆에 선 뿅뿅에게 향했다. 커다란 후드와 마스크로 가렸는데도, 수상함은 완전히 사라지지 않았다.",
+      stage: "withU3",
+      camera: { x: -51, y: -1, zoom: 3.21, duration: 650 },
+      actors: [],
+      next: "chapter1_manager_kid"
+    },
+    chapter1_manager_kid: {
+      speaker: "점장",
+      text: "근데 옆에 꼬마는 누구야?",
+      stage: "withU3",
+      actors: [],
+      next: "chapter1_cousin"
+    },
+    chapter1_cousin: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "사촌 동생이에요.",
+      stage: "withU3",
+      actors: [],
+      next: "chapter1_pyong_cousin"
+    },
+    chapter1_pyong_cousin: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "사촌...?",
+      stage: "withU3",
+      actors: [],
+      next: "chapter1_shy_cousin"
+    },
+    chapter1_shy_cousin: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "얘가 낯을 좀 가려요.",
+      stage: "withU3",
+      actors: [],
+      next: "chapter1_manager_cute"
+    },
+    chapter1_manager_cute: {
+      speaker: "점장",
+      text: "하하, 귀엽네. 근데 빛나 씨, 다음 주부터 평일 오후 알바 자리 하나 비는데 혹시 더 들어올 생각 있어?",
+      stage: "withU3",
+      actors: [],
+      next: "chapter1_bina_parttime_question"
+    },
+    chapter1_bina_parttime_question: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "네?",
+      stage: "withU3",
+      actors: [],
+      next: "chapter1_manager_parttime_open"
+    },
+    chapter1_manager_parttime_open: {
+      speaker: "점장",
+      text: "원래 하던 애가 갑자기 그만둔다네. 혹시 시간 괜찮으면 생각해봐.",
+      stage: "withU3",
+      actors: [],
+      next: "chapter1_parttime_thoughts"
+    },
+    chapter1_parttime_thoughts: {
+      speaker: "나레이션",
+      text: "빛나는 잠깐 말이 없었다. 월세. 식비. 포트폴리오 작업 비용. 그리고 옥상에 떨어진 외계 장치.",
+      stage: "withU3",
+      actors: [],
+      next: "chapter1_think_parttime"
+    },
+    chapter1_think_parttime: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "...생각해볼게요.",
+      stage: "withU3",
+      actors: [],
+      next: "chapter1_parttime_unlock"
+    },
+    chapter1_parttime_unlock: {
+      speaker: "시스템",
+      text: "편의점 알바가 해금되었습니다. 편의점 계산대와 상호작용하면 알바를 할 수 있습니다. 알바를 하면 돈을 벌 수 있습니다.",
+      stage: "withU3",
+      actors: [],
+      effects: {
+        flag: "partTimeJobUnlocked"
+      },
       next: "chapter1_go_back"
     },
     chapter1_go_back: {
@@ -2147,278 +2339,488 @@ const story = {
     },
     chapter1_ramen: {
       speaker: "나레이션",
-      text: "방에 돌아와서 컵라면을 끓였다. 뿅뿅은 신기한 듯 물이 끓는 과정을 지켜보았다.",
+      text: "방으로 돌아온 두 사람은 자연스럽게 컵라면에 물을 부었다. 어젯밤과 비슷한 풍경이었다.",
       stage: "room",
       next: "chapter1_water_boils"
     },
     chapter1_water_boils: {
       speaker: "뿅뿅",
       character: "pyong",
-      text: "와, 물이 보글보글해!",
+      text: "오늘도 그 지구 면 요리 먹는 거야?",
       stage: "room",
       next: "chapter1_just_boiling"
     },
     chapter1_just_boiling: {
       speaker: "이빛나",
       character: "bina",
-      text: "그냥 끓는 거야.",
+      text: "응. 돈 없을 땐 이게 제일 무난하거든.",
       stage: "room",
       next: "chapter1_boiling_science"
     },
     chapter1_boiling_science: {
       speaker: "뿅뿅",
       character: "pyong",
-      text: "끓는다. 열로 인한 기화 현상이구나. 원시적이지만 효율적이네.",
+      text: "난 좋아. 이거 중독성 있어.",
       stage: "room",
       next: "chapter1_ramen_ready"
     },
     chapter1_ramen_ready: {
       speaker: "나레이션",
-      text: "빛나는 대답 없이 컵라면에 물을 부었다. 삼 분 후, 뚜껑을 열었다.",
-      stage: "room",
-      next: "chapter1_try_ramen"
-    },
-    chapter1_try_ramen: {
-      speaker: "이빛나",
-      character: "bina",
-      text: "자, 먹어봐.",
-      stage: "room",
-      next: "chapter1_ramen_taste"
-    },
-    chapter1_ramen_taste: {
-      speaker: "뿅뿅",
-      character: "pyong",
-      text: "맛있어!",
-      stage: "room",
-      next: "chapter1_really_good"
-    },
-    chapter1_really_good: {
-      speaker: "이빛나",
-      character: "bina",
-      text: "그래?",
-      stage: "room",
-      next: "chapter1_ramen_texture"
-    },
-    chapter1_ramen_texture: {
-      speaker: "뿅뿅",
-      character: "pyong",
-      text: "응! 이게 뭐야? 짜면서 뜨거우면서 쫄깃해!",
-      stage: "room",
-      next: "chapter1_easy_food"
-    },
-    chapter1_easy_food: {
-      speaker: "이빛나",
-      character: "bina",
-      text: "라면이야. 지구에서 제일 쉬운 음식.",
-      stage: "room",
-      next: "chapter1_earth_best"
-    },
-    chapter1_earth_best: {
-      speaker: "뿅뿅",
-      character: "pyong",
-      text: "제일 쉬운 게 이렇게 맛있어? 지구 최고야!",
+      text: "보글거리는 물소리와 함께 좁은 옥탑방 안에 익숙한 냄새가 퍼졌다. 어제보다 조금 덜 어색한 냄새였다.",
       stage: "room",
       next: "chapter1_quiet_meal"
     },
     chapter1_quiet_meal: {
       speaker: "나레이션",
-      text: "조용한 식사였다. 하지만 이상하게 불편하지 않았다. 누군가와 함께 먹으니까 라면이 더 맛있게 느껴졌다.",
+      text: "짧은 식사가 끝났다. 특별할 것 없는 컵라면 한 끼였지만, 어젯밤처럼 낯설지는 않았다.",
       stage: "room",
-      next: "chapter1_thanks"
+      next: "chapter1_comm_check"
     },
-    chapter1_thanks: {
+    chapter1_comm_check: {
       speaker: "뿅뿅",
       character: "pyong",
-      text: "빛나. 고마워.",
+      text: "빛나.",
       stage: "room",
-      next: "chapter1_thanks_what"
+      next: "chapter1_comm_why"
     },
-    chapter1_thanks_what: {
+    chapter1_comm_why: {
       speaker: "이빛나",
       character: "bina",
-      text: "뭐가?",
+      text: "왜?",
       stage: "room",
-      next: "chapter1_thanks_reason"
+      next: "chapter1_comm_device"
     },
-    chapter1_thanks_reason: {
+    chapter1_comm_device: {
       speaker: "뿅뿅",
       character: "pyong",
-      text: "밥 같이 먹어줘서. 나, 지구에 아는 사람 없거든. 빛나밖에.",
+      text: "이제 교신 장치 확인해야 해.",
       stage: "room",
-      next: "chapter1_warm"
+      next: "chapter1_comm_question"
     },
-    chapter1_warm: {
+    chapter1_comm_question: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "교신 장치?",
+      stage: "room",
+      next: "chapter1_comm_signal"
+    },
+    chapter1_comm_signal: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "응. 구조 신호를 보내는 장치.",
+      stage: "room",
+      next: "chapter1_comm_table"
+    },
+    chapter1_comm_table: {
       speaker: "나레이션",
-      text: "빛나는 뭐라고 대답해야 할지 몰랐다. 가슴 한쪽이 이상하게 따뜻해졌다.",
+      text: "뿅뿅은 작은 원형 장치를 테이블 위에 올렸다. 표면 일부는 타버린 듯 검게 그을려 있었다.",
       stage: "room",
-      next: "chapter1_portfolio_question"
+      next: "chapter1_comm_module"
     },
-    chapter1_portfolio_question: {
+    chapter1_comm_module: {
       speaker: "뿅뿅",
       character: "pyong",
-      text: "그게 뭐야?",
+      text: "통신 링크 모듈. 쉽게 말하면 구조 요청을 보내는 입이야.",
       stage: "room",
-      next: "chapter1_portfolio_answer"
+      next: "chapter1_comm_contact"
     },
-    chapter1_portfolio_answer: {
+    chapter1_comm_contact: {
       speaker: "이빛나",
       character: "bina",
-      text: "포트폴리오. 취업할 때 보여주는 거.",
+      text: "그럼 이거 고치면 너희 쪽에 연락할 수 있는 거야?",
       stage: "room",
-      next: "chapter1_want_see"
+      next: "chapter1_comm_limit"
     },
-    chapter1_want_see: {
+    chapter1_comm_limit: {
       speaker: "뿅뿅",
       character: "pyong",
-      text: "오, 그림이다! 아까 본 거랑 비슷하네.",
+      text: "응. 우주선을 완전히 고치는 건 지금은 무리야. 하지만 구조 요청 정도는 보낼 수 있을지도 몰라.",
       stage: "room",
-      next: "chapter1_not_much"
+      next: "chapter1_comm_first"
     },
-    chapter1_not_much: {
+    chapter1_comm_first: {
       speaker: "이빛나",
       character: "bina",
-      text: "안 봐도 돼. 별 거 아니야.",
+      text: "...그럼 일단 이거부터네.",
       stage: "room",
-      next: "chapter1_why_draw"
+      next: "chapter1_comm_survive"
     },
-    chapter1_why_draw: {
+    chapter1_comm_survive: {
       speaker: "뿅뿅",
       character: "pyong",
-      text: "왜 그림 그려?",
+      text: "응. 살아남으려면 먼저 신호를 보내야 해.",
       stage: "room",
-      next: "chapter1_why_draw_answer"
+      effects: {
+        flag: "communicatorRepairUnlocked"
+      },
+      next: "chapter1_keyboard_circuit"
     },
-    chapter1_why_draw_answer: {
+    chapter1_keyboard_circuit: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "그리고 이 장치에는 입력 회로가 필요해.",
+      stage: "room",
+      next: "chapter1_input_circuit"
+    },
+    chapter1_input_circuit: {
       speaker: "이빛나",
       character: "bina",
-      text: "...몰라.",
+      text: "입력 회로?",
       stage: "room",
-      next: "chapter1_molla"
+      next: "chapter1_signal_path"
     },
-    chapter1_molla: {
+    chapter1_signal_path: {
       speaker: "뿅뿅",
       character: "pyong",
-      text: "몰라?",
+      text: "신호를 정리해서 보내는 통로 같은 거야.",
       stage: "room",
-      next: "chapter1_used_to_like"
+      next: "chapter1_keyboard_look"
     },
-    chapter1_used_to_like: {
+    chapter1_keyboard_look: {
+      speaker: "나레이션",
+      text: "뿅뿅의 시선이 책상 위의 고장 난 키보드로 향했다.",
+      stage: "room",
+      next: "chapter1_keyboard_no_way"
+    },
+    chapter1_keyboard_no_way: {
       speaker: "이빛나",
       character: "bina",
-      text: "원래는 좋아했어. 그리는 거. 뭔가 만드는 거. 근데 지금은... 잘 모르겠어.",
+      text: "설마.",
       stage: "room",
-      next: "chapter1_like_again"
+      next: "chapter1_keyboard_that"
     },
-    chapter1_like_again: {
+    chapter1_keyboard_that: {
       speaker: "뿅뿅",
       character: "pyong",
-      text: "그럼 다시 좋아하게 되면 되지 않을까?",
+      text: "응. 저거.",
       stage: "room",
-      next: "chapter1_hard"
+      next: "chapter1_keyboard_repair_question"
     },
-    chapter1_hard: {
+    chapter1_keyboard_repair_question: {
       speaker: "이빛나",
       character: "bina",
-      text: "그게 쉬우면 안 힘들지.",
+      text: "진짜 내 키보드로 외계 교신기를 고친다고?",
       stage: "room",
-      next: "chapter1_why_hard"
+      next: "chapter1_keyboard_praise"
     },
-    chapter1_why_hard: {
+    chapter1_keyboard_praise: {
       speaker: "뿅뿅",
       character: "pyong",
-      text: "왜 어려운데?",
+      text: "지구 키보드, 생각보다 훌륭해.",
       stage: "room",
-      next: "chapter1_failures"
+      next: "chapter1_keyboard_anxiety"
     },
-    chapter1_failures: {
+    chapter1_keyboard_anxiety: {
       speaker: "이빛나",
       character: "bina",
-      text: "자꾸 실패하니까. 아무도 안 좋아해주니까. 내가 만든 거.",
+      text: "칭찬처럼 들리는데 왜 불안하지.",
       stage: "room",
-      next: "chapter1_hate_self"
+      choices: [
+        {
+          text: "……해보자.",
+          next: "chapter1_repair_accept",
+          effects: { binaWill: 1, pyongTrust: 1, flag: "accepted_communicator_repair" }
+        },
+        {
+          text: "진짜 될까?",
+          next: "chapter1_repair_doubt",
+          effects: { binaWill: 1, flag: "doubted_but_started" }
+        },
+        {
+          text: "내 키보드 비싼 건데.",
+          next: "chapter1_repair_joke",
+          effects: { pyongTrust: 1, flag: "joked_about_keyboard" }
+        }
+      ]
     },
-    chapter1_hate_self: {
+    chapter1_repair_accept: {
       speaker: "이빛나",
       character: "bina",
-      text: "그러다 보니까 나도 싫어지더라고. 내가 만든 것도, 만드는 나 자신도.",
+      text: "...해보자.",
       stage: "room",
-      next: "chapter1_pyong_failure"
+      next: "chapter1_repair_accept_pyong"
     },
-    chapter1_pyong_failure: {
+    chapter1_repair_accept_pyong: {
       speaker: "뿅뿅",
       character: "pyong",
-      text: "빛나, 나도 실패한 적 있어.",
+      text: "응. 좋아. 빛나는 아직 안 꺼졌어.",
       stage: "room",
-      next: "chapter1_pyong_exam"
+      next: "chapter1_repair_accept_bina"
     },
-    chapter1_pyong_exam: {
-      speaker: "뿅뿅",
-      character: "pyong",
-      text: "차원 항법 시험. 세 번 떨어졌어. 공주한테 필수인 시험인데.",
-      stage: "room",
-      next: "chapter1_princess_exam"
-    },
-    chapter1_princess_exam: {
+    chapter1_repair_accept_bina: {
       speaker: "이빛나",
       character: "bina",
-      text: "공주도 시험 봐?",
+      text: "그 말 자꾸 하지 마. 기분 이상하니까.",
       stage: "room",
-      next: "chapter1_exam_hard"
+      next: "chapter1_repair_start"
     },
-    chapter1_exam_hard: {
-      speaker: "뿅뿅",
-      character: "pyong",
-      text: "응. 우리 은하에선 로열티도 자격증이 필요해. 나, 그때 진짜 힘들었어.",
-      stage: "room",
-      next: "chapter1_fourth"
-    },
-    chapter1_fourth: {
-      speaker: "뿅뿅",
-      character: "pyong",
-      text: "근데 네 번째에 붙었어. 포기 안 해서. 계속 했으니까.",
-      stage: "room",
-      next: "chapter1_bina_can"
-    },
-    chapter1_bina_can: {
-      speaker: "뿅뿅",
-      character: "pyong",
-      text: "빛나도 할 수 있을 것 같아.",
-      stage: "room",
-      next: "chapter1_sparkle_art"
-    },
-    chapter1_sparkle_art: {
-      speaker: "뿅뿅",
-      character: "pyong",
-      text: "네 그림 봤을 때, 막 반짝반짝했거든. 완성 안 됐는데도.",
-      stage: "room",
-      next: "chapter1_thank_word"
-    },
-    chapter1_thank_word: {
+    chapter1_repair_doubt: {
       speaker: "이빛나",
       character: "bina",
-      text: "...고마워. 그런 말 해줘서.",
+      text: "진짜 될까?",
       stage: "room",
-      next: "chapter1_fact"
+      next: "chapter1_repair_doubt_pyong"
     },
-    chapter1_fact: {
+    chapter1_repair_doubt_pyong: {
       speaker: "뿅뿅",
       character: "pyong",
-      text: "별거 아니야. 사실인데 뭘.",
+      text: "모르겠어. 근데 안 하면 더 모르잖아.",
       stage: "room",
+      next: "chapter1_repair_doubt_narration"
+    },
+    chapter1_repair_doubt_narration: {
+      speaker: "나레이션",
+      text: "빛나는 잠깐 말문이 막혔다. 맞는 말이었다. 짜증나게.",
+      stage: "room",
+      next: "chapter1_repair_start"
+    },
+    chapter1_repair_joke: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "내 키보드 비싼 건데.",
+      stage: "room",
+      next: "chapter1_repair_joke_pyong"
+    },
+    chapter1_repair_joke_pyong: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "고장 났잖아.",
+      stage: "room",
+      next: "chapter1_repair_joke_bina"
+    },
+    chapter1_repair_joke_bina: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "그래도 내 거잖아.",
+      stage: "room",
+      next: "chapter1_repair_joke_pyong_careful"
+    },
+    chapter1_repair_joke_pyong_careful: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "그럼 더 조심히 쓸게.",
+      stage: "room",
+      next: "chapter1_repair_joke_bina_meaning"
+    },
+    chapter1_repair_joke_bina_meaning: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "분해하는 시점에서 이미 조심의 의미가 좀 사라졌는데.",
+      stage: "room",
+      next: "chapter1_repair_start"
+    },
+    chapter1_repair_start: {
+      speaker: "나레이션",
+      text: "뿅뿅은 키보드를 뒤집어 나사를 풀기 시작했다. 키캡 몇 개가 빠지고, 안쪽의 얇은 회로판이 드러났다.",
+      stage: "room",
+      next: "chapter1_repair_assist_order"
+    },
+    chapter1_repair_assist_order: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "빛나. 내가 말하는 순서대로 부품 넘겨줘.",
+      stage: "room",
+      next: "chapter1_repair_no_experience"
+    },
+    chapter1_repair_no_experience: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "나 이런 거 해본 적 없는데.",
+      stage: "room",
+      next: "chapter1_repair_pyong_first"
+    },
+    chapter1_repair_pyong_first: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "나도 지구 키보드는 처음이야.",
+      stage: "room",
+      next: "chapter1_repair_responsibility"
+    },
+    chapter1_repair_responsibility: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "둘 다 초보면 누가 책임져?",
+      stage: "room",
+      next: "chapter1_repair_universe"
+    },
+    chapter1_repair_universe: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "우주가?",
+      stage: "room",
+      next: "chapter1_repair_tutorial"
+    },
+    chapter1_repair_tutorial: {
+      speaker: "시스템",
+      text: "수리 보조 미니게임이 활성화되었습니다. 이번 미니게임은 교신기 수리 튜토리얼입니다. 현재 프로토타입에서는 Great / Good / Miss 버튼으로 결과를 선택합니다.",
+      stage: "room",
+      effects: {
+        flag: "repairMiniGameUnlocked"
+      },
+      choices: [
+        {
+          text: "Great",
+          next: "chapter1_repair_great",
+          effects: { pyongTrust: 3, communicationProgress: 5, fatigue: 1, timeSlot: "evening", flag: "repair_tutorial_great" }
+        },
+        {
+          text: "Good",
+          next: "chapter1_repair_good",
+          effects: { pyongTrust: 2, communicationProgress: 3, fatigue: 1, timeSlot: "evening", flag: "repair_tutorial_good" }
+        },
+        {
+          text: "Miss",
+          next: "chapter1_repair_miss",
+          effects: { pyongTrust: 1, communicationProgress: 1, fatigue: 2, timeSlot: "evening", flag: "repair_tutorial_miss" }
+        }
+      ]
+    },
+    chapter1_repair_great: {
+      speaker: "나레이션",
+      text: "빛나는 뿅뿅이 말하기도 전에 필요한 부품을 빠르게 찾아냈다.",
+      stage: "room",
+      next: "chapter1_repair_great_pyong"
+    },
+    chapter1_repair_great_pyong: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "오! 빛나 손 빠르다.",
+      stage: "room",
+      next: "chapter1_repair_great_bina"
+    },
+    chapter1_repair_great_bina: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "디자인 작업하다 보면 단축키랑 손놀림은 늘거든.",
+      stage: "room",
+      next: "chapter1_repair_great_pyong_help"
+    },
+    chapter1_repair_great_pyong_help: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "좋아. 엄청 도움 돼.",
+      stage: "room",
+      next: "chapter1_evening_wrap"
+    },
+    chapter1_repair_good: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "응. 좋아. 이 정도면 연결 가능해.",
+      stage: "room",
+      next: "chapter1_repair_good_bina"
+    },
+    chapter1_repair_good_bina: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "\"이 정도면\"이 좀 불안한데.",
+      stage: "room",
+      next: "chapter1_repair_good_pyong"
+    },
+    chapter1_repair_good_pyong: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "완벽하지 않아도 신호는 보낼 수 있어.",
+      stage: "room",
+      next: "chapter1_repair_good_bina_ok"
+    },
+    chapter1_repair_good_bina_ok: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "그 말은 좀 좋네.",
+      stage: "room",
+      next: "chapter1_evening_wrap"
+    },
+    chapter1_repair_miss: {
+      speaker: "나레이션",
+      text: "빛나는 회로판 방향을 반대로 들고 있었다.",
+      stage: "room",
+      next: "chapter1_repair_miss_pyong"
+    },
+    chapter1_repair_miss_pyong: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "빛나. 그거 뒤집혔어.",
+      stage: "room",
+      next: "chapter1_repair_miss_bina"
+    },
+    chapter1_repair_miss_bina: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "아.",
+      stage: "room",
+      next: "chapter1_repair_miss_pyong_ok"
+    },
+    chapter1_repair_miss_pyong_ok: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "괜찮아. 처음엔 원래 많이 틀려. 그래도 조금은 연결됐어.",
+      stage: "room",
+      next: "chapter1_evening_wrap"
+    },
+    chapter1_evening_wrap: {
+      speaker: "나레이션",
+      text: "작업이 끝났을 때는 이미 해가 기울고 있었다. 옥탑방 안에는 키보드 부품과 공구들이 어지럽게 흩어져 있었다.",
+      stage: "roomEvening",
+      next: "chapter1_comm_glow"
+    },
+    chapter1_comm_glow: {
+      speaker: "나레이션",
+      text: "통신 링크 모듈은 여전히 그을린 채였지만, 아주 작게, 불규칙한 빛을 내고 있었다.",
+      stage: "roomEvening",
+      next: "chapter1_comm_glow_bina"
+    },
+    chapter1_comm_glow_bina: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "...방금 빛난 거야?",
+      stage: "roomEvening",
+      next: "chapter1_comm_alive"
+    },
+    chapter1_comm_alive: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "응. 완전히 죽은 장치는 아니야.",
+      stage: "roomEvening",
+      next: "chapter1_fading_comm"
+    },
+    chapter1_fading_comm: {
+      speaker: "이빛나",
+      character: "bina",
+      text: "꺼져가는 별 같네.",
+      stage: "roomEvening",
+      next: "chapter1_bina_silence"
+    },
+    chapter1_bina_silence: {
+      speaker: "나레이션",
+      text: "말하고 나서, 빛나는 괜히 입을 다물었다.",
+      stage: "roomEvening",
+      next: "chapter1_pyong_not_out"
+    },
+    chapter1_pyong_not_out: {
+      speaker: "뿅뿅",
+      character: "pyong",
+      text: "응. 아직 완전히 꺼지진 않았어.",
+      stage: "roomEvening",
+      next: "chapter1_repair_reflection"
+    },
+    chapter1_repair_reflection: {
+      speaker: "나레이션",
+      text: "그 말이 이상하게 마음에 남았다. 포트폴리오도. 교신기도. 인생도. 전부 한 번에 고쳐지는 건 아니니까.",
+      stage: "roomEvening",
       next: "chapter1_end"
     },
     chapter1_end: {
-      speaker: "나레이션",
-      text: "빛나는 화면을 다시 올렸다. 포트폴리오. 한 달째 멈춰 있던 파일. 오늘은... 조금만 해볼까. 그 생각이 문득 들었다. 오랜만에.",
-      stage: "room",
+      speaker: "시스템",
+      text: "2일차가 종료되었습니다. 오늘의 기록: 편의점 알바 가능성이 생겼다. 교신기 수리가 메인 목표로 등록되었다. 고장 난 키보드 회로를 활용해 교신기 수리를 시작했다. 첫 번째 수리 보조 미니게임을 진행했다.",
+      stage: "roomEvening",
       choices: [
-        { text: "2일차 시작", next: "schedule_start" },
+        { text: "3일차 시작", next: "schedule_start", effects: { set: { day: 3, timeSlot: "morning" } } },
         { text: "처음부터 다시", next: "prologue_title" }
       ]
     },
     schedule_start: {
       speaker: "시스템",
-      text: "2일차부터는 30일 동안 아침, 점심, 밤마다 행동을 하나씩 선택한다.",
+      text: "3일차부터는 직접 방과 장소를 이동하며 아침, 점심, 저녁, 밤마다 행동을 하나씩 선택한다. 초반 목표는 교신기를 수리해 구조 신호를 보내는 것이다.",
       stage: "room",
       mode: "schedule"
     }
